@@ -1,0 +1,19 @@
+{
+  "editor.autoIndent": "full",
+  "files.exclude": {
+    "**/.git": true,
+    "**/.svn": true,
+    "**/.hg": true,
+    "**/CVS": true,
+    "**/.DS_Store": true,
+    "**/_build": true,
+    "**/*~": true,
+    "**/*.bak": true,
+    "**/bower_components": true,
+    "**/node_modules": true,
+    "**/temp": true
+  },
+  "editor.tabSize": 2,
+  "javascript.format.insertSpaceBeforeFunctionParenthesis": true,
+  "beautify.tabSize": 2
+}
