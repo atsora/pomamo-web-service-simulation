@@ -1,7 +1,10 @@
 {
-  "name": "@lemoineat/pomamo-web-service-simulation",
+  "name": "@atsora/pomamo-web-service-simulation",
   "version": "3.0.2",
-  "author": "Lemoine Automation Technologies <nrelange@lemoinetechnologies.com>",
+  "contributors": [
+    "Lemoine Automation Technologies <nrelange@lemoinetechnologies.com>",
+    "Nicolas Relange <nicolas@atsora.eu>"
+  ],
   "files": ["**", "!.git/**", "!.gitignore", "!.gitattributes", "!.eslintrc.json", "!.vscode/**"],
   "dependencies": {
     "@bower_components/jquery-mockjax": "jakerella/jquery-mockjax#~1.6.0"
