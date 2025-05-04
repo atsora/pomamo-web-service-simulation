@@ -4,7 +4,7 @@
 
 var Test1 = { 'Value': 'Test 1 from db' };
 var Test2 = { 'Value': 'Test 2 from db' };
-var Test2 = { 'Value': 'Default value' };
+var Test3 = { 'Value': 'Default value' };
 
 $.mockjax({
   url : /^http:\/\/localhost:8082\/I18N\/Catalog\?Key=Test1.*$/,
