@@ -7,7 +7,7 @@
   ],
   "files": ["**", "!.git/**", "!.gitignore", "!.gitattributes", "!.eslintrc.json", "!.vscode/**"],
   "dependencies": {
-    "@bower_components/jquery-mockjax": "jakerella/jquery-mockjax#~1.6.0"
+    "@bower_components/jquery-mockjax": "jakerella/jquery-mockjax#v2.6.1"
   },
   "engines": {
     "yarn": ">= 1.0.0"
