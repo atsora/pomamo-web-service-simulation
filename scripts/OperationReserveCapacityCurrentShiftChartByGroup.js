@@ -6,10 +6,11 @@ var ReserveCapacityJSON18 =
 {
   'DateTime': '2020-12-03T12:45:12.2507943Z',
   'Day': '2020-12-03',
-  'Shift': { 'Id': 3, 'Display': ' Afternoon', 'Color': '#FFFF80' },
+  'Shift': { 'Id': 3, 'Display': 'Afternoon', 'Color': '#FFFF80' },
   'ChartData': [
     { 'GroupId': '47', 'GroupDisplay': '47: A1-1: A1-Machine1', 'ReserveCapacity': -12.602089952499995 },
-    { 'GroupId': '48', 'GroupDisplay': '48: A1-2: A1-Machine2', 'ReserveCapacity': -1.9633877923076994 }]
+    { 'GroupId': '48', 'GroupDisplay': '48: A1-2: A1-Machine2', 'ReserveCapacity': -1.9633877923076994 }],
+  'ShiftGoal': 320
 };
 
 var ReserveCapacityJSON19 =
@@ -32,7 +33,8 @@ var ReserveCapacityJSON19 =
       'GroupId': 50,
       'GroupDisplay': 'OP50',
       'ReserveCapacity': 8
-    }]
+    }],
+  'ShiftGoal': 500
 };
 
 var ReserveCapacityJSON20 =
@@ -55,7 +57,8 @@ var ReserveCapacityJSON20 =
       'GroupId': 50,
       'GroupDisplay': 'OP50',
       'ReserveCapacity': 5.8
-    }]
+    }],
+  'ShiftGoal': 250
 };
 
 var ReserveCapacityJSON_Error =
