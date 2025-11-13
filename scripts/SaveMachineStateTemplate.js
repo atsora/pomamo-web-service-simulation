@@ -31,7 +31,7 @@ var SaveMachineStateTemplateJSONnew = {
   }
 };
 $.mockjax({
-  url: /^http:\/\/localhost:8082\/MachineStateTemplateMachineAssociation\/Save\?MachineId=18&Range=.*&MachineStateTemplateId=1&RevisionId=.*/,
+  url: /^http:\/\/localhost:8082\/MachineStateTemplateMachineAssociation\/Save\?MachineId=18&Range=.*&MachineStateTemplateId=7&RevisionId=.*/,
   responseTime: 800,
   responseText: SaveMachineStateTemplateJSONnew
 });
