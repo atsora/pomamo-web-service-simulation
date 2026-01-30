@@ -4,7 +4,7 @@
 
 var OpProductionMachiningStatusJSON18 =
 {
-  'NbPiecesDoneDuringShift': 188,
+  'NbPiecesDoneDuringShift': 10,
   'GoalNowShift': 200,
   'Day': '2019-06-27',
   'Shift': {
@@ -189,4 +189,9 @@ $.mockjax({
   url: /^http:\/\/localhost:8082\/Operation\/ProductionMachiningStatus\?MachineId=922.*$/,
   responseTime: 1000,
   responseText: GetProductionMachiningStatusJSON5
+});
+$.mockjax({
+  url: /^http:\/\/localhost:8082\/Operation\/ProductionMachiningStatus\?MachineId=18.*$/,
+  responseTime: 1000,
+  responseText: OpProductionMachiningStatusJSON18
 });
