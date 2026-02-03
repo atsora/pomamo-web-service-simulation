@@ -5,7 +5,6 @@
 var GetMachineJSON18 = { 'Id': '18', 'Display': 'Simul1' };
 var GetMachineJSON3 = { 'Id': '3', 'Display': 'HeidenhainLsv2' };
 var GetMachineJSON19 = { 'Id': '19', 'Display': 'Machine19DisplayWithALongName' };
-var GetMachineJSON20 = { 'Id': '20', 'Display': 'Machine20' };
 var GetMachineJSON21 = { 'Id': '21', 'Display': 'Machine_21' };
 var GetMachineJSON22 = { 'Id': '22', 'Display': 'Machine_22' };
 
@@ -51,12 +50,6 @@ $.mockjax({
   url: 'http://localhost:8082/Machine/Name?MachineId=19',
   responseTime: 1000,
   responseText: GetMachineJSON19
-});
-
-$.mockjax({
-  url: 'http://localhost:8082/Machine/Name?MachineId=20',
-  responseTime: 1000,
-  responseText: GetMachineJSON20
 });
 
 $.mockjax({
