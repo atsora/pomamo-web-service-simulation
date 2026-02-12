@@ -13,8 +13,8 @@ var GetReasonSelectionV3_JSON1 = [
     'Color': '#FFEE58',
     'ReasonScore': 100,
     'DetailsRequired': false,
-    'ReasonGroupDisplay': 'NewGroup',
-    'ReasonGroupLongDisplay': 'NewGroup - ',
+    'ReasonGroupDisplay': 'Planifié',
+    'ReasonGroupLongDisplay': 'Planifié - ',
     'ReasonGroupId': 28
   },
   {
@@ -24,8 +24,8 @@ var GetReasonSelectionV3_JSON1 = [
     'Color': '#D07D26',
     'ReasonScore': 100,
     'DetailsRequired': false,
-    'ReasonGroupDisplay': 'Tests',
-    'ReasonGroupLongDisplay': 'Tests - ',
+    'ReasonGroupDisplay': 'Planifié',
+    'ReasonGroupLongDisplay': 'Planifié - ',
     'ReasonGroupId': 23
   },
   {
@@ -36,8 +36,8 @@ var GetReasonSelectionV3_JSON1 = [
     'Color': '#D07D26',
     'ReasonScore': 100,
     'DetailsRequired': true,
-    'ReasonGroupDisplay': 'Tests',
-    'ReasonGroupLongDisplay': 'Tests - ',
+    'ReasonGroupDisplay': 'Planifié',
+    'ReasonGroupLongDisplay': 'Planifié - ',
     'ReasonGroupId': 23
   },
   {
@@ -47,8 +47,8 @@ var GetReasonSelectionV3_JSON1 = [
     'Color': '#D07D26',
     'ReasonScore': 100,
     'DetailsRequired': false,
-    'ReasonGroupDisplay': 'Tests',
-    'ReasonGroupLongDisplay': 'Tests - ',
+    'ReasonGroupDisplay': 'Planifié',
+    'ReasonGroupLongDisplay': 'Planifié - ',
     'ReasonGroupId': 23
   },
   {
@@ -59,8 +59,8 @@ var GetReasonSelectionV3_JSON1 = [
     'Color': '#42A5F5',
     'ReasonScore': 100,
     'DetailsRequired': false,
-    'ReasonGroupDisplay': 'A',
-    'ReasonGroupLongDisplay': 'A - ',
+    'ReasonGroupDisplay': 'Arr\u00EAts non planifi\u00E9s',
+    'ReasonGroupLongDisplay': 'Arr\u00EAts non planifi\u00E9s - ',
     'ReasonGroupId': 24
   },
   {
@@ -70,8 +70,8 @@ var GetReasonSelectionV3_JSON1 = [
     'Color': '#42A5F5',
     'ReasonScore': 100,
     'DetailsRequired': false,
-    'ReasonGroupDisplay': 'A',
-    'ReasonGroupLongDisplay': 'A - ',
+    'ReasonGroupDisplay': 'Arr\u00EAts non planifi\u00E9s',
+    'ReasonGroupLongDisplay': 'Arr\u00EAts non planifi\u00E9s - ',
     'ReasonGroupId': 24
   },
   {
@@ -82,8 +82,8 @@ var GetReasonSelectionV3_JSON1 = [
     'Color': '#FFEE58',
     'ReasonScore': 100,
     'DetailsRequired': false,
-    'ReasonGroupDisplay': 'A',
-    'ReasonGroupLongDisplay': 'A - ',
+    'ReasonGroupDisplay': 'Arr\u00EAts non planifi\u00E9s',
+    'ReasonGroupLongDisplay': 'Arr\u00EAts non planifi\u00E9s - ',
     'ReasonGroupId': 24
   },
   {
@@ -94,8 +94,8 @@ var GetReasonSelectionV3_JSON1 = [
     'Color': '#42A5F5',
     'ReasonScore': 100,
     'DetailsRequired': false,
-    'ReasonGroupDisplay': 'A',
-    'ReasonGroupLongDisplay': 'A - ',
+    'ReasonGroupDisplay': 'Arr\u00EAts non planifi\u00E9s',
+    'ReasonGroupLongDisplay': 'Arr\u00EAts non planifi\u00E9s - ',
     'ReasonGroupId': 24
   },
   {
@@ -106,8 +106,8 @@ var GetReasonSelectionV3_JSON1 = [
     'Color': '#42A5F5',
     'ReasonScore': 100,
     'DetailsRequired': false,
-    'ReasonGroupDisplay': 'A',
-    'ReasonGroupLongDisplay': 'A - ',
+    'ReasonGroupDisplay': 'Arr\u00EAts non planifi\u00E9s',
+    'ReasonGroupLongDisplay': 'Arr\u00EAts non planifi\u00E9s - ',
     'ReasonGroupId': 24
   },
   {
@@ -118,8 +118,8 @@ var GetReasonSelectionV3_JSON1 = [
     'Color': '#42A5F5',
     'ReasonScore': 100,
     'DetailsRequired': false,
-    'ReasonGroupDisplay': 'A',
-    'ReasonGroupLongDisplay': 'A - ',
+    'ReasonGroupDisplay': 'Arr\u00EAts non planifi\u00E9s',
+    'ReasonGroupLongDisplay': 'Arr\u00EAts non planifi\u00E9s - ',
     'ReasonGroupId': 24
   },
   {
@@ -129,8 +129,8 @@ var GetReasonSelectionV3_JSON1 = [
     'Color': '#D07D26',
     'ReasonScore': 100,
     'DetailsRequired': false,
-    'ReasonGroupDisplay': 'Tests',
-    'ReasonGroupLongDisplay': 'Tests - ',
+    'ReasonGroupDisplay': 'Arr\u00EAts non planifi\u00E9s',
+    'ReasonGroupLongDisplay': 'Arr\u00EAts non planifi\u00E9s - ',
     'ReasonGroupId': 23
   },
   {
@@ -140,8 +140,8 @@ var GetReasonSelectionV3_JSON1 = [
     'Color': '#D07D26',
     'ReasonScore': 100,
     'DetailsRequired': false,
-    'ReasonGroupDisplay': 'Tests',
-    'ReasonGroupLongDisplay': 'Tests - ',
+    'ReasonGroupDisplay': 'Arr\u00EAts non planifi\u00E9s',
+    'ReasonGroupLongDisplay': 'Arr\u00EAts non planifi\u00E9s - ',
     'ReasonGroupId': 23
   },
   {
@@ -151,12 +151,110 @@ var GetReasonSelectionV3_JSON1 = [
     'Color': '#D07D26',
     'ReasonScore': 100,
     'DetailsRequired': false,
-    'ReasonGroupDisplay': 'Tests',
-    'ReasonGroupLongDisplay': 'Tests - ',
+    'ReasonGroupDisplay': 'Arr\u00EAts non planifi\u00E9s',
+    'ReasonGroupLongDisplay': 'Arr\u00EAts non planifi\u00E9s - ',
     'ReasonGroupId': 23
+  },
+  {
+    'Id': 102,
+    'ClassificationId': '102',
+    'Display': 'Panne machine',
+    'LongDisplay': 'Panne machine - ',
+    'Color': '#D02626',
+    'ReasonScore': 100,
+    'NoDetails': false,
+    'DetailsRequired': false,
+    'AlwaysSecondLevel': false,
+    'ReasonGroupDisplay': 'Arr\u00EAts non planifi\u00E9s',
+    'ReasonGroupLongDisplay': 'Arr\u00EAts non planifi\u00E9s - ',
+    'ReasonGroupId': 101
+  },
+  {
+    'Id': 108,
+    'ClassificationId': '108',
+    'Display': 'Divers',
+    'LongDisplay': 'Divers - ',
+    'Color': '#FFFF00',
+    'ReasonScore': 100,
+    'NoDetails': false,
+    'DetailsRequired': true,
+    'AlwaysSecondLevel': false,
+    'ReasonGroupDisplay': 'Arr\u00EAts non planifi\u00E9s',
+    'ReasonGroupLongDisplay': 'Arr\u00EAts non planifi\u00E9s - ',
+    'ReasonGroupId': 101
+  },
+  {
+    'Id': 107,
+    'ClassificationId': '107',
+    'Display': 'Cellule vide',
+    'LongDisplay': 'Cellule vide - ',
+    'Color': '#FFFF00',
+    'ReasonScore': 100,
+    'NoDetails': false,
+    'DetailsRequired': false,
+    'AlwaysSecondLevel': false,
+    'ReasonGroupDisplay': 'Arr\u00EAts non planifi\u00E9s',
+    'ReasonGroupLongDisplay': 'Arr\u00EAts non planifi\u00E9s - ',
+    'ReasonGroupId': 101
+  },
+  {
+    'Id': 106,
+    'ClassificationId': '106',
+    'Display': 'Compensation',
+    'LongDisplay': 'Compensation - ',
+    'Color': '#FFFF00',
+    'ReasonScore': 100,
+    'NoDetails': false,
+    'DetailsRequired': false,
+    'AlwaysSecondLevel': false,
+    'ReasonGroupDisplay': 'Arr\u00EAts non planifi\u00E9s',
+    'ReasonGroupLongDisplay': 'Arr\u00EAts non planifi\u00E9s - ',
+    'ReasonGroupId': 101
+  },
+  {
+    'Id': 105,
+    'ClassificationId': '105',
+    'Display': 'Changement outils',
+    'LongDisplay': 'Changement outils - ',
+    'Color': '#FFFF00',
+    'ReasonScore': 100,
+    'NoDetails': false,
+    'DetailsRequired': false,
+    'AlwaysSecondLevel': false,
+    'ReasonGroupDisplay': 'Arr\u00EAts non planifi\u00E9s',
+    'ReasonGroupLongDisplay': 'Arr\u00EAts non planifi\u00E9s - ',
+    'ReasonGroupId': 101
+  },
+  {
+    'Id': 104,
+    'ClassificationId': '104',
+    'Display': 'Casse outils',
+    'LongDisplay': 'Casse outils - ',
+    'Color': '#FFFF00',
+    'ReasonScore': 100,
+    'NoDetails': false,
+    'DetailsRequired': false,
+    'AlwaysSecondLevel': true,
+    'ReasonGroupDisplay': 'Arr\u00EAts non planifi\u00E9s',
+    'ReasonGroupLongDisplay': 'Arr\u00EAts non planifi\u00E9s - ',
+    'ReasonGroupId': 101
+  },
+  {
+    'Id': 103,
+    'ClassificationId': '103',
+    'Display': 'Arr\u00EAt robot',
+    'LongDisplay': 'Arr\u00EAt robot - ',
+    'Color': '#FFFF00',
+    'ReasonScore': 100,
+    'NoDetails': false,
+    'DetailsRequired': false,
+    'AlwaysSecondLevel': true,
+    'ReasonGroupDisplay': 'Arr\u00EAts non planifi\u00E9s',
+    'ReasonGroupLongDisplay': 'Arr\u00EAts non planifi\u00E9s - ',
+    'ReasonGroupId': 101
   }
 ];
-
+//========================================================================================
 // To change :
 var GetReasonSelectionV3_JSON2 = [
   {
@@ -166,8 +264,8 @@ var GetReasonSelectionV3_JSON2 = [
     'Color': '#FFFF00',
     'ReasonScore': 100,
     'DetailsRequired': false,
-    'ReasonGroupDisplay': 'NewGroup',
-    'ReasonGroupLongDisplay': 'NewGroup - ',
+    'ReasonGroupDisplay': 'Arr\u00EAts non planifi\u00E9s',
+    'ReasonGroupLongDisplay': 'Arr\u00EAts non planifi\u00E9s - ',
     'ReasonGroupId': 28
   },
   {
@@ -177,8 +275,8 @@ var GetReasonSelectionV3_JSON2 = [
     'Color': '#FFFF00',
     'ReasonScore': 100,
     'DetailsRequired': false,
-    'ReasonGroupDisplay': 'Tests',
-    'ReasonGroupLongDisplay': 'Tests - ',
+    'ReasonGroupDisplay': 'Arr\u00EAts non planifi\u00E9s',
+    'ReasonGroupLongDisplay': 'Arr\u00EAts non planifi\u00E9s - ',
     'ReasonGroupId': 23
   },
   {
@@ -187,9 +285,9 @@ var GetReasonSelectionV3_JSON2 = [
     'LongDisplay': 'Test1 - ',
     'Color': '#FFFF00',
     'ReasonScore': 100,
-    'DetailsRequired': true,
-    'ReasonGroupDisplay': 'Tests',
-    'ReasonGroupLongDisplay': 'Tests - ',
+    'DetailsRequired': false,
+    'ReasonGroupDisplay': 'Arr\u00EAts non planifi\u00E9s',
+    'ReasonGroupLongDisplay': 'Arr\u00EAts non planifi\u00E9s - ',
     'ReasonGroupId': 23
   },
   {
@@ -199,8 +297,8 @@ var GetReasonSelectionV3_JSON2 = [
     'Color': '#FFFF00',
     'ReasonScore': 100,
     'DetailsRequired': false,
-    'ReasonGroupDisplay': 'Tests',
-    'ReasonGroupLongDisplay': 'Tests - ',
+    'ReasonGroupDisplay': 'Arr\u00EAts non planifi\u00E9s',
+    'ReasonGroupLongDisplay': 'Arr\u00EAts non planifi\u00E9s - ',
     'ReasonGroupId': 23
   },
   {
@@ -210,8 +308,8 @@ var GetReasonSelectionV3_JSON2 = [
     'Color': '#FFFF00',
     'ReasonScore': 100,
     'DetailsRequired': false,
-    'ReasonGroupDisplay': 'A',
-    'ReasonGroupLongDisplay': 'A - ',
+    'ReasonGroupDisplay': 'Arr\u00EAts non planifi\u00E9s',
+    'ReasonGroupLongDisplay': 'Arr\u00EAts non planifi\u00E9s - ',
     'ReasonGroupId': 24
   },
   {
@@ -221,11 +319,11 @@ var GetReasonSelectionV3_JSON2 = [
     'Color': '#FFFF00',
     'ReasonScore': 100,
     'DetailsRequired': false,
-    'ReasonGroupDisplay': 'A',
-    'ReasonGroupLongDisplay': 'A - ',
+    'ReasonGroupDisplay': 'Arr\u00EAts non planifi\u00E9s',
+    'ReasonGroupLongDisplay': 'Arr\u00EAts non planifi\u00E9s - ',
     'ReasonGroupId': 24
   },
-  {
+   {
     'Id': 39,
     'Display': 'New reason',
     'LongDisplay': 'New reason - Test adding a new reason',
@@ -233,23 +331,52 @@ var GetReasonSelectionV3_JSON2 = [
     'Color': '#FFFF00',
     'ReasonScore': 100,
     'DetailsRequired': false,
-    'ReasonGroupDisplay': 'A',
-    'ReasonGroupLongDisplay': 'A - ',
+    'ReasonGroupDisplay': 'Arr\u00EAts planifi\u00E9s',
+    'ReasonGroupLongDisplay': 'Arr\u00EAts planifi\u00E9s - ',
     'ReasonGroupId': 24
-  },
-  {
+  }, 
+    {
     'Id': 29,
     'Display': 'A3',
     'LongDisplay': 'A3 - ',
     'Color': '#FFFF00',
     'ReasonScore': 100,
     'DetailsRequired': false,
-    'ReasonGroupDisplay': 'A',
-    'ReasonGroupLongDisplay': 'A - ',
+    'AlwaysSecondLevel': false,
+    'ReasonGroupDisplay': 'test',
+    'ReasonGroupLongDisplay': 'test - ',
     'ReasonGroupId': 24
+  },  
+  {
+    'Id': 104,
+    'ClassificationId': '104',
+    'Display': 'Casse outils',
+    'LongDisplay': 'Casse outils - ',
+    'Color': '#FFFF00',
+    'ReasonScore': 100,
+    'NoDetails': false,
+    'DetailsRequired': false,
+    'AlwaysSecondLevel': true,
+    'ReasonGroupDisplay': 'Arr\u00EAts non planifi\u00E9s',
+    'ReasonGroupLongDisplay': 'Arr\u00EAts non planifi\u00E9s - ',
+    'ReasonGroupId': 101
+  },
+  {
+    'Id': 103,
+    'ClassificationId': '103',
+    'Display': 'Arr\u00EAt robot',
+    'LongDisplay': 'Arr\u00EAt robot - ',
+    'Color': '#FFFF00',
+    'ReasonScore': 100,
+    'NoDetails': false,
+    'DetailsRequired': false,
+    'AlwaysSecondLevel': true,
+    'ReasonGroupDisplay': 'Arr\u00EAts planifi\u00E9s',
+    'ReasonGroupLongDisplay': 'Arr\u00EAts planifi\u00E9s - ',
+    'ReasonGroupId': 101
   }
 ];
-
+//========================================================================================
 var GetReasonSelectionV3_JSON3 = [
   {
     'Id': 41,
@@ -339,6 +466,104 @@ var GetReasonSelectionV3_JSON3 = [
     'ReasonGroupDisplay': 'A',
     'ReasonGroupLongDisplay': 'A - ',
     'ReasonGroupId': 24
+  },
+  {
+    'Id': 102,
+    'ClassificationId': '102',
+    'Display': 'Panne machine',
+    'LongDisplay': 'Panne machine - ',
+    'Color': '#D02626',
+    'ReasonScore': 100,
+    'NoDetails': false,
+    'DetailsRequired': false,
+    'AlwaysSecondLevel': false,
+    'ReasonGroupDisplay': 'Arr\u00EAts non planifi\u00E9s',
+    'ReasonGroupLongDisplay': 'Arr\u00EAts non planifi\u00E9s - ',
+    'ReasonGroupId': 101
+  },
+  {
+    'Id': 108,
+    'ClassificationId': '108',
+    'Display': 'Divers',
+    'LongDisplay': 'Divers - ',
+    'Color': '#FFFF00',
+    'ReasonScore': 100,
+    'NoDetails': false,
+    'DetailsRequired': true,
+    'AlwaysSecondLevel': false,
+    'ReasonGroupDisplay': 'Arr\u00EAts non planifi\u00E9s',
+    'ReasonGroupLongDisplay': 'Arr\u00EAts non planifi\u00E9s - ',
+    'ReasonGroupId': 101
+  },
+  {
+    'Id': 107,
+    'ClassificationId': '107',
+    'Display': 'Cellule vide',
+    'LongDisplay': 'Cellule vide - ',
+    'Color': '#FFFF00',
+    'ReasonScore': 100,
+    'NoDetails': false,
+    'DetailsRequired': false,
+    'AlwaysSecondLevel': false,
+    'ReasonGroupDisplay': 'Arr\u00EAts non planifi\u00E9s',
+    'ReasonGroupLongDisplay': 'Arr\u00EAts non planifi\u00E9s - ',
+    'ReasonGroupId': 101
+  },
+  {
+    'Id': 106,
+    'ClassificationId': '106',
+    'Display': 'Compensation',
+    'LongDisplay': 'Compensation - ',
+    'Color': '#FFFF00',
+    'ReasonScore': 100,
+    'NoDetails': false,
+    'DetailsRequired': false,
+    'AlwaysSecondLevel': false,
+    'ReasonGroupDisplay': 'Arr\u00EAts non planifi\u00E9s',
+    'ReasonGroupLongDisplay': 'Arr\u00EAts non planifi\u00E9s - ',
+    'ReasonGroupId': 101
+  },
+  {
+    'Id': 105,
+    'ClassificationId': '105',
+    'Display': 'Changement outils',
+    'LongDisplay': 'Changement outils - ',
+    'Color': '#FFFF00',
+    'ReasonScore': 100,
+    'NoDetails': false,
+    'DetailsRequired': false,
+    'AlwaysSecondLevel': false,
+    'ReasonGroupDisplay': 'Arr\u00EAts non planifi\u00E9s',
+    'ReasonGroupLongDisplay': 'Arr\u00EAts non planifi\u00E9s - ',
+    'ReasonGroupId': 101
+  },
+  {
+    'Id': 104,
+    'ClassificationId': '104',
+    'Display': 'Casse outils',
+    'LongDisplay': 'Casse outils - ',
+    'Color': '#FFFF00',
+    'ReasonScore': 100,
+    'NoDetails': false,
+    'DetailsRequired': false,
+    'AlwaysSecondLevel': false,
+    'ReasonGroupDisplay': 'Arr\u00EAts non planifi\u00E9s',
+    'ReasonGroupLongDisplay': 'Arr\u00EAts non planifi\u00E9s - ',
+    'ReasonGroupId': 101
+  },
+  {
+    'Id': 103,
+    'ClassificationId': '103',
+    'Display': 'Arr\u00EAt robot',
+    'LongDisplay': 'Arr\u00EAt robot - ',
+    'Color': '#FFFF00',
+    'ReasonScore': 100,
+    'NoDetails': false,
+    'DetailsRequired': false,
+    'AlwaysSecondLevel': false,
+    'ReasonGroupDisplay': 'Arr\u00EAts non planifi\u00E9s',
+    'ReasonGroupLongDisplay': 'Arr\u00EAts non planifi\u00E9s - ',
+    'ReasonGroupId': 101
   }
 ];
 
