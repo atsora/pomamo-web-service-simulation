@@ -85,38 +85,38 @@ var invalidMachineResponse = {
 };
 
 $.mockjax({
-  url: 'http://localhost:8082/GetLastMachineStatusV2?Id=18',
+  url: /http:\/\/localhost:8082\/GetLastMachineStatusV2\?.*Id=18/,
   responseTime: 10,
   responseText: GetLastMachineStatusJSON1
 });
 
 $.mockjax({
-  url: 'http://localhost:8082/GetLastMachineStatusV2?Id=19',
+  url: /http:\/\/localhost:8082\/GetLastMachineStatusV2\?.*Id=19/,
   responseTime: 1000,
   responseText: GetLastMachineStatusJSON2
 });
 
 $.mockjax({
-  url: 'http://localhost:8082/GetLastMachineStatusV2?Id=20',
+  url: /http:\/\/localhost:8082\/GetLastMachineStatusV2\?.*Id=20/,
   responseTime: 1000,
   responseText: GetLastMachineStatusJSON3
 });
 
 $.mockjax({
-  url: 'http://localhost:8082/GetLastMachineStatusV2?Id=21',
+  url: /http:\/\/localhost:8082\/GetLastMachineStatusV2\?.*Id=21/,
   responseTime: 1000,
   responseText: GetLastMachineStatusJSON4
 });
 
 $.mockjax({
-  url: 'http://localhost:8082/GetLastMachineStatusV2?Id=22',
+  url: /http:\/\/localhost:8082\/GetLastMachineStatusV2\?.*Id=22/,
   responseTime: 1000,
   responseText: invalidMachineResponse,
   status: 200
 });
 
 $.mockjax({
-  url: 'http://localhost:8082/GetLastMachineStatusV2?Id=128',
+  url: /http:\/\/localhost:8082\/GetLastMachineStatusV2\?.*Id=128/,
   status: 504,
   responseTime: 1000
 });
