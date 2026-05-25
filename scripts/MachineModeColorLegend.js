@@ -2,51 +2,15 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-var MachineModeColorLegend1 = {
-  'Items': [
-    {
-      'Color':'#FFFF00',
-      'Display':'mode 1',
-      'MachineModes': [
-        {
-          'Color':'#FFFF00',
-          'Display':'1st MM'
-        }, {
-          'Color':'#FFFF00',
-          'Display':'second MM'
-        }, {
-          'Color':'#FFFF00',
-          'Display':'Third MM'
-        }, {
-          'Color':'#FFFF00',
-          'Display':'Fourth MM'
-        }]
-    }, {
-      'Color':'#FF00FF',
-      'Display':'mode 2',
-      'MachineModes': [
-        {
-          'Color':'#FF00FF',
-          'Display':'super long machine mode descrption with many un needed informations'
-        }, {
-          'Color':'#FF00FF',
-          'Display':'some more text to make it longer'
-        }, {
-          'Color':'#FF00FF',
-          'Display':'more text'
-        }, {
-          'Color':'#FF00FF',
-          'Display':'end text to try'
-        }]
-    }, {
-      'Color':'#800080',
-      'Display':'mode 3',
-      'MachineModes': []
-    }]
-};
+require('./_helpers');
 
-$.mockjax({
-  url : 'http://localhost:8082/MachineModeColorLegend/Get',
-  responseTime : 1000,
-  responseText : MachineModeColorLegend1
-});
+MOCK.respond('MachineModeColorLegend/Get', function () {
+  return {
+    Items: [
+      { Color: '#2E7D32', Display: 'Running', MachineModes: [{ Id: 2, Display: 'Active' }] },
+      { Color: '#FFC107', Display: 'Idle',    MachineModes: [{ Id: 1, Display: 'Inactive' }] },
+      { Color: '#D32F2F', Display: 'Error',   MachineModes: [{ Id: 3, Display: 'Error' }] },
+      { Color: '#7B1FA2', Display: 'Setup',   MachineModes: [{ Id: 4, Display: 'Setup' }] }
+    ]
+  };
+}, { delay: 200 });

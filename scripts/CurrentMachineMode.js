@@ -2,54 +2,30 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-var CurrentMachineModeJSON1 = '{"DateTime":"20991212T12:12:12Z","MachineMode":{"Color":"#008000", "Category": {"Id":2} }}';
+// Mock for `CurrentMachineMode?MachineId=<id>` — minimal machine-mode snapshot.
 
-/*Running*/
-var CurrentMachineModeJSON2 = '{"DateTime":"20991212T12:12:12Z","MachineMode":{"Color":"#FFA500", "Category": {"Id":3} }}';
+require('./_helpers');
 
-/*Error*/
-var CurrentMachineModeJSON3 = '{"ErrorMessage":"No monitored machine with id 20", "":true}';
-var CurrentMachineModeJSON4 = '{"DateTime":"20991212T12:12:12Z","MachineMode":{"Color":"#FFFF00", "Category": {"Id":1} }}';
+var CurrentMachineModeJSON1 = {
+  DateTime: '{{now}}',
+  MachineMode: { Color: '#2E7D32', Category: { Id: 2 }, Running: true }
+};
 
-/*Stopped*/
-/*Green Leaf - EcoMode*/
-var CurrentMachineModeJSON5 ='{"DateTime":"20991212T12:12:12Z","MachineMode":{"Running":true, "Category":{"Id":5}}}';
+var CurrentMachineModeJSON2 = {
+  DateTime: '{{now}}',
+  MachineMode: { Color: '#FFC107', Category: { Id: 1 }, Running: false }
+};
 
-/*Stopping*/
-var CurrentMachineModeJSON6 ='{"DateTime":"20991212T12:12:12Z","MachineMode":{"Running":true, "Category":{"Id":6}}}';
+var CurrentMachineModeJSON3 = {
+  DateTime: '{{now}}',
+  MachineMode: { Color: '#D32F2F', Category: { Id: 3 }, Running: false }
+};
 
-$.mockjax({
-  url : 'http://localhost:8082/CurrentMachineMode?MachineId=18',
-  responseTime : 1000,
-  responseText : CurrentMachineModeJSON1
-});
-
-$.mockjax({
-  url : 'http://localhost:8082/CurrentMachineMode?MachineId=19',
-  responseTime : 1000,
-  responseText : CurrentMachineModeJSON2
-});
-
-$.mockjax({
-  url : 'http://localhost:8082/CurrentMachineMode?MachineId=20',
-  responseTime : 1000,
-  responseText : CurrentMachineModeJSON3
-});
-
-$.mockjax({
-  url : 'http://localhost:8082/CurrentMachineMode?MachineId=21',
-  responseTime : 1000,
-  responseText : CurrentMachineModeJSON4
-});
-
-$.mockjax({
-  url : 'http://localhost:8082/CurrentMachineMode?MachineId=25',
-  responseTime : 1000,
-  responseText : CurrentMachineModeJSON5
-});
-
-$.mockjax({
-  url : 'http://localhost:8082/CurrentMachineMode?MachineId=26',
-  responseTime : 1000,
-  responseText : CurrentMachineModeJSON6
-});
+MOCK.respond('CurrentMachineMode', {
+  byMachineId: {
+    1: CurrentMachineModeJSON1,
+    2: CurrentMachineModeJSON2,
+    3: CurrentMachineModeJSON3
+  },
+  default: CurrentMachineModeJSON1
+}, { delay: 300 });

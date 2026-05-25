@@ -2,137 +2,45 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-var OperationSlotJSON1 = {
-  'Id': 4589,
-  'Range': '2013-09-03T08:28:37.000Z,2013-09-03T08:37:00.000Z',
-  'Display': 'cycle_1',
-  'BgColor': '#999966'
-};
-var OperationSlotJSON2 = {
-  'Id': 52,
-  'Range': '2013-09-03T08:39:00.000Z,2013-09-03T08:43:00.000Z',
-  'Display': 'cycle_3',
-  'FgColor': '#0000FF',
-  'BgColor': '#FF0000'
-};
-var OperationSlotJSON3 = {
-  'Id': 638,
-  'Range': '2013-09-03T08:45:00.000Z,2013-09-03T08:50:00.000Z',
-  'Display': 'cycle_25',
-  'FgColor': '#FF0000',
-  'BgColor': '#00FF00'
-};
-var OperationSlotJSON4 = {
-  'Id': 7586,
-  'Range': '2013-09-03T08:52:00.000Z,2013-09-03T08:54:36.000Z',
-  'Display': 'cycle_48',
-  'FgColor': '#0000FF',
-  'BgColor': '#FF0000'
+// Mock for `OperationCycleSlots?MachineId=<id>&Range=<range>` — cycle slots
+// over the last 2 hours.
+
+require('./_helpers');
+
+var OperationCycleSlotsJSON1 = {
+  Range: '{{now-2h..now}}',
+  Blocks: [
+    { Range: '{{now-2h..now-1h45m}}',    Id: 5001, Display: 'Cycle 1', BgColor: '#0080FF', FgColor: '#FFFFFF' },
+    { Range: '{{now-1h45m..now-1h30m}}', Id: 5002, Display: 'Cycle 2', BgColor: '#2E7D32', FgColor: '#FFFFFF' },
+    { Range: '{{now-1h30m..now-1h15m}}', Id: 5003, Display: 'Cycle 3', BgColor: '#7B1FA2', FgColor: '#FFFFFF' },
+    { Range: '{{now-1h15m..now-1h}}',    Id: 5004, Display: 'Cycle 4', BgColor: '#FFC107', FgColor: '#000000' },
+    { Range: '{{now-1h..now-45m}}',      Id: 5001, Display: 'Cycle 1', BgColor: '#0080FF', FgColor: '#FFFFFF' },
+    { Range: '{{now-45m..now-30m}}',     Id: 5002, Display: 'Cycle 2', BgColor: '#2E7D32', FgColor: '#FFFFFF' },
+    { Range: '{{now-30m..now-15m}}',     Id: 5003, Display: 'Cycle 3', BgColor: '#7B1FA2', FgColor: '#FFFFFF' },
+    { Range: '{{now-15m..now}}',         Id: 5004, Display: 'Cycle 4', BgColor: '#FFC107', FgColor: '#000000' }
+  ]
 };
 
-var OperationSlotListJSON1 = {
-  'Range': '2013-09-03T08:28:37.000Z,2013-09-03T08:54:36.000Z',
-  'Blocks': [OperationSlotJSON1, OperationSlotJSON2, OperationSlotJSON3, OperationSlotJSON4]
+var OperationCycleSlotsJSON2 = {
+  Range: '{{now-2h..now}}',
+  Blocks: [
+    { Range: '{{now-2h..now-1h}}', Id: 5001, Display: 'Cycle 1', BgColor: '#0080FF', FgColor: '#FFFFFF' },
+    { Range: '{{now-1h..now}}',    Id: 5002, Display: 'Cycle 2', BgColor: '#2E7D32', FgColor: '#FFFFFF' }
+  ]
 };
 
-var invalidMachineResponse = {
-  'ErrorMessage': 'Invalid machine',
-  'Status': 'WrongRequestParameter'
+var OperationCycleSlotsJSON3 = {
+  Range: '{{now-2h..now}}',
+  Blocks: [
+    { Range: '{{now-2h..now}}', Id: 5003, Display: 'Cycle 3', BgColor: '#7B1FA2', FgColor: '#FFFFFF' }
+  ]
 };
 
-var OperationSlotJSON3_1 = {
-  'Id': 4589,
-  'Range': '2014-05-05T06:00:00.000Z,2014-05-05T11:00:00.000Z',
-  'Display': 'cycle_1',
-  'BgColor': '#757575'
-};
-var OperationSlotJSON3_2 = {
-  'Id': 52,
-  'Range': '2014-05-05T14:00:00.000Z,2014-05-05T18:00:00.000Z',
-  'Display': 'cycle_12',
-  'BgColor': '#575757'
-};
-var OperationSlotListJSON3 = {
-  'Range': '[2014-05-05T06:00:00.000Z,2014-05-05T18:00:00.000Z)',
-  'Blocks': [OperationSlotJSON3_1, OperationSlotJSON3_2]
-};
-var OperationSlotListJSON_details = {
-  'Blocks': [{
-    'Details': [{
-      'Range': '[2017-01-16T07:00:00Z,2017-01-16T09:49:18Z)',
-      'Display': 'cycle_details'
-    }],
-    'Id': 1,
-    'Display': 'cycle_33',
-    'Range': '[2017-01-16T07:00:00Z,2017-01-16T09:49:18Z)',
-    'FgColor': '#FFFFFF', 'BgColor': '#FF00FF'
-  }],
-  'Range': '[2017-01-16T08:54:04Z,2017-01-16T08:54:04Z]'
-};
-
-/*
-$.mockjax({
-  url : "http://localhost:8082/OperationCycleSlots?MachineId=18",
-  responseTime : 1000,
-  responseText : OperationSlotListJSON1
-});
-
-$.mockjax({
-  url : "http://localhost:8082/OperationCycleSlots?MachineId=19",
-  responseTime : 1000,
-  responseText : invalidMachineResponse,
-  status: 200
-});
-*/
-$.mockjax({
-  url: /^http:\/\/localhost:8082\/OperationCycleSlots\?MachineId=18\&Range=\[2013.*$/,
-  responseTime: 1000,
-  responseText: OperationSlotListJSON1
-});
-/*
-$.mockjax({
-  url : /^http:\/\/localhost:8082\/OperationCycleSlots\?MachineId=19\&Range=\[2013.*$/,
-  responseTime : 1000,
-  responseText : invalidMachineResponse,
-  status: 200
-});*/
-
-$.mockjax({
-  url: /^http:\/\/localhost:8082\/OperationCycleSlots\?MachineId=19\&Range=\[2014.*$/,
-  responseTime: 2000,
-  responseText: invalidMachineResponse,
-  status: 200
-});
-/*
-$.mockjax({
-  url : /^http:\/\/localhost:8082\/OperationCycleSlots\?MachineId=18\&Range=\[2014.*$/,
-  responseTime : 200,
-  responseText : OperationSlotListJSON3
-});
-
-// A modifier : anneeJSON= ?
-$.mockjax({
-  url : /^http:\/\/localhost:8082\/OperationCycleSlots\?MachineId=18\&Range=\[2015.*$/,
-  responseTime : 100,
-  responseText : OperationSlotListJSON1
-});
-
-// A modifier : anneeJSON= ?
-$.mockjax({
-  url : /^http:\/\/localhost:8082\/OperationCycleSlots\?MachineId=19\&Range=\[2015.*$/,
-  responseTime : 100,
-  responseText : invalidMachineResponse,
-  status: 200
-});
-*/
-$.mockjax({
-  url: /^http:\/\/localhost:8082\/OperationCycleSlots\?MachineId=2.*$/,
-  responseTime: 2000,
-  responseText: OperationSlotListJSON3
-});
-
-$.mockjax({
-  url: /^http:\/\/localhost:8082\/OperationCycleSlots\?MachineId=35.*$/,
-  responseTime: 2000,
-  responseText: OperationSlotListJSON_details
-});
+MOCK.respond('OperationCycleSlots', {
+  byMachineId: {
+    1: OperationCycleSlotsJSON1,
+    2: OperationCycleSlotsJSON2,
+    3: OperationCycleSlotsJSON3
+  },
+  default: OperationCycleSlotsJSON1
+}, { delay: 400 });

@@ -2,36 +2,18 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-var SaveMachineStateTemplateJSON1 = {
-  'Id': 3,
-  'Message': 'Ok'
-};
+require('./_helpers');
 
-var saveFailedResponse = {
-  'ErrorMessage': 'Save failed',
-  'Status': 'UnexpectedError'
-};
-
-$.mockjax({
-  url: 'http://localhost:8082/SaveMachineStateTemplate?Id=1*',
-  responseTime: 1000,
-  responseText: SaveMachineStateTemplateJSON1
-});
-$.mockjax({
-  url: 'http://localhost:8082/SaveMachineStateTemplate?Id=3*',
-  responseTime: 800,
-  responseText: saveFailedResponse,
-  status: 200
-});
-
-
-var SaveMachineStateTemplateJSONnew = {
-  'Revision': {
-    'Id': 3
+MOCK.respond('SaveMachineStateTemplate', function (call) {
+  if (!call.params.Id && !call.params.MachineId) {
+    return { __status: 400, body: MOCK.errorBody('Id required') };
   }
-};
-$.mockjax({
-  url: /^http:\/\/localhost:8082\/MachineStateTemplateMachineAssociation\/Save\?MachineId=18&Range=.*&MachineStateTemplateId=7&RevisionId=.*/,
-  responseTime: 800,
-  responseText: SaveMachineStateTemplateJSONnew
-});
+  return { Id: 3, Message: 'Ok' };
+}, { delay: 500 });
+
+MOCK.respond('MachineStateTemplateMachineAssociation/Save', function (call) {
+  if (!call.params.MachineId) {
+    return { __status: 400, body: MOCK.errorBody('MachineId required') };
+  }
+  return { Revision: { Id: 3 } };
+}, { delay: 400 });

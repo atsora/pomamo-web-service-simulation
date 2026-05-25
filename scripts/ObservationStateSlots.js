@@ -2,66 +2,36 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-var ObservationStateSlotsJSON18 = {
-  'ObservationStateSlots' : [{
-    'Id' : 1,
-    'Display' : 'OS_1',
-    'Range' : '[2015-05-05T08:08:08Z;2015-05-06T08:08:08Z)',
-    'FgColor' : '#0000FF',
-    'BgColor': '#FF0000',
-    //'PatternName': 'diagonal-stripe-1',
-    'PatternColor': '#888888'
-  }, {
-    'Id' : 2,
-    'Display' : 'OS_2',
-    'Range' : '[2015-05-06T08:08:08Z;2015-05-07T08:08:08Z)',
-    'FgColor' : '#FF0000',
-    'BgColor': '#00FF00',
-    //'PatternName': 'dots-3',
-    'PatternColor': '#CCCCCC'
-  }
-  ]};
+// Mock for `ObservationStateSlots?MachineId=<id>&Range=<range>`.
 
-var ObservationStateSlotsJSON20 = {
-  'ObservationStateSlots' : [{
-    'Id' : 2,
-    'Display' : 'OS_2',
-    'Range' : '[2016-06-06T08:00:00Z;)',
-    'FgColor' : '#0000FF',
-    'BgColor': '#FF0000',
-    //'PatternName': 'circles-4',
-    'PatternColor': '#333333'
-  }
-  ]};
+require('./_helpers');
 
-var ObservationStateSlotsJSON_details = '{"ObservationStateSlots":[{"Display":"Production","Range":"[2016-09-06T08:30:00Z,)","FgColor":"#000000","BgColor":"#00FFFF"}],"Range":"[2017-01-16T11:18:41Z,2017-01-16T11:18:41Z]"}';
+var ObservationStateSlotsJSON1 = {
+  ObservationStateSlots: [
+    { Range: '{{now-8h..now-6h}}', Id: 1, Display: 'Production',  BgColor: '#2E7D32', FgColor: '#FFFFFF', PatternColor: '#888888' },
+    { Range: '{{now-6h..now-4h}}', Id: 2, Display: 'Setup',       BgColor: '#7B1FA2', FgColor: '#FFFFFF', PatternColor: '#CCCCCC' },
+    { Range: '{{now-4h..now}}',    Id: 1, Display: 'Production',  BgColor: '#2E7D32', FgColor: '#FFFFFF', PatternColor: '#888888' }
+  ]
+};
 
-$.mockjax({
-  url : 'http://localhost:8082/ObservationStateSlots?MachineId=18',
-  responseTime : 1000,
-  responseText : ObservationStateSlotsJSON18
-});
+var ObservationStateSlotsJSON2 = {
+  ObservationStateSlots: [
+    { Range: '{{now-8h..now-2h}}', Id: 1, Display: 'Production',  BgColor: '#2E7D32', FgColor: '#FFFFFF', PatternColor: '#888888' },
+    { Range: '{{now-2h..now}}',    Id: 3, Display: 'Maintenance', BgColor: '#FFC107', FgColor: '#000000', PatternColor: '#888888' }
+  ]
+};
 
-$.mockjax({
-  url : 'http://localhost:8082/ObservationStateSlots?MachineId=18&Range=[2015-05-05T06:00:00.000Z,2015-05-07T18:00:00.000Z)',
-  responseTime : 1000,
-  responseText : ObservationStateSlotsJSON18
-});
+var ObservationStateSlotsJSON3 = {
+  ObservationStateSlots: [
+    { Range: '{{now-8h..now}}', Id: 1, Display: 'Production', BgColor: '#2E7D32', FgColor: '#FFFFFF', PatternColor: '#888888' }
+  ]
+};
 
-$.mockjax({
-  url : 'http://localhost:8082/ObservationStateSlots?MachineId=20',
-  responseTime : 1000,
-  responseText : ObservationStateSlotsJSON20
-});
-
-$.mockjax({
-  url : 'http://localhost:8082/ObservationStateSlots?MachineId=20&Range=[2016-06-06T06:00:00.000Z,2016-06-08T18:00:00.000Z)',
-  responseTime : 1000,
-  responseText : ObservationStateSlotsJSON20
-});
-
-$.mockjax({
-  url : 'http://localhost:8082/ObservationStateSlots?MachineId=3*',
-  responseTime : 2000,
-  responseText : ObservationStateSlotsJSON_details
-});
+MOCK.respond('ObservationStateSlots', {
+  byMachineId: {
+    1: ObservationStateSlotsJSON1,
+    2: ObservationStateSlotsJSON2,
+    3: ObservationStateSlotsJSON3
+  },
+  default: ObservationStateSlotsJSON1
+}, { delay: 400 });

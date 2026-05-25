@@ -2,10 +2,49 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-var sequenceSlots = '{"ByMachineModule":[{"MachineModule":{"Id":3,"Display":"HeidenhainLsv2","Main":true},"Blocks":[{"Details":[{"Range":"[2017-01-16T08:54:58Z,2017-01-16T11:01:05Z)","Display":"sequenceTest1 sfkat 1: autotool (20 0)"}],"Id":4,"Display":"sequenceTest1 sfkat 1: autotool (20 0)","Range":"[2017-01-16T08:54:58Z,2017-01-16T11:01:05Z)","FgColor":"#000000","BgColor":"#00FFFF"}]}],"Range":"[2017-01-16T10:36:00Z,2017-01-16T10:36:00Z]"}';
+// Mock for `SequenceSlots?MachineId=<id>&Range=<range>` — CNC sequences
+// running over the last 2 hours.
 
-$.mockjax({
-  url : 'http://localhost:8082/SequenceSlots?MachineId=3*',
-  responseTime : 1000,
-  responseText : sequenceSlots
-});
+require('./_helpers');
+
+var SequenceSlotsJSON1 = {
+  Range: '{{now-2h..now}}',
+  ByMachineModule: [{
+    MachineModule: { Id: 1, Display: 'Main', Main: true },
+    Blocks: [
+      { Range: '{{now-2h..now-1h20m}}', Id: 1, Display: 'SEQ1: Roughing',    BgColor: '#0080FF', FgColor: '#000000', Details: [{ Range: '{{now-2h..now-1h20m}}', Display: 'SEQ1: Roughing' }] },
+      { Range: '{{now-1h20m..now-40m}}', Id: 2, Display: 'SEQ2: Tool change', BgColor: '#FFC107', FgColor: '#000000', Details: [{ Range: '{{now-1h20m..now-40m}}', Display: 'SEQ2: Tool change' }] },
+      { Range: '{{now-40m..now}}',       Id: 3, Display: 'SEQ3: Finishing',   BgColor: '#2E7D32', FgColor: '#FFFFFF', Details: [{ Range: '{{now-40m..now}}', Display: 'SEQ3: Finishing' }] }
+    ]
+  }]
+};
+
+var SequenceSlotsJSON2 = {
+  Range: '{{now-2h..now}}',
+  ByMachineModule: [{
+    MachineModule: { Id: 2, Display: 'Main', Main: true },
+    Blocks: [
+      { Range: '{{now-2h..now-1h}}', Id: 1, Display: 'SEQ1: Roughing',  BgColor: '#0080FF', FgColor: '#000000', Details: [{ Range: '{{now-2h..now-1h}}', Display: 'SEQ1: Roughing' }] },
+      { Range: '{{now-1h..now}}',    Id: 3, Display: 'SEQ3: Finishing', BgColor: '#2E7D32', FgColor: '#FFFFFF', Details: [{ Range: '{{now-1h..now}}', Display: 'SEQ3: Finishing' }] }
+    ]
+  }]
+};
+
+var SequenceSlotsJSON3 = {
+  Range: '{{now-2h..now}}',
+  ByMachineModule: [{
+    MachineModule: { Id: 3, Display: 'Main', Main: true },
+    Blocks: [
+      { Range: '{{now-2h..now}}', Id: 3, Display: 'SEQ3: Finishing', BgColor: '#2E7D32', FgColor: '#FFFFFF', Details: [{ Range: '{{now-2h..now}}', Display: 'SEQ3: Finishing' }] }
+    ]
+  }]
+};
+
+MOCK.respond('SequenceSlots', {
+  byMachineId: {
+    1: SequenceSlotsJSON1,
+    2: SequenceSlotsJSON2,
+    3: SequenceSlotsJSON3
+  },
+  default: SequenceSlotsJSON1
+}, { delay: 400 });

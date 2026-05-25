@@ -2,38 +2,15 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-var changePasswordJSON = {
-  'Message': 'Ok'
-};
-var changePasswordFailedResponse = {
-  'ErrorMessage': 'Save failed',
-  'Status': 'UnexpectedError'
-};
- 
-/*
-jsonData = 
-{
-  // Login can be here too
-  'Password': 'old',
-  'NewPassword': 'new'
- }
-*/
+require('./_helpers');
+require('./scenario');
 
-$.mockjax({
-  url: 'http://localhost:8082/ChangePassword?Login=Bruce',
-  type: 'POST',
-  contentType: 'text/json',
-  dataType: 'json',
-  responseTime: 800,
-  responseText: changePasswordJSON
-});
-
-$.mockjax({
-  url: 'http://localhost:8082/ChangePassword?Login=Paul',
-  type: 'POST',
-  contentType: 'text/json',
-  dataType: 'json',
-  responseTime: 800,
-  responseText: changePasswordFailedResponse,
-  status: 200
-});
+MOCK.respond('ChangePassword', function (call) {
+  if (!call.params.Login) {
+    return { __status: 400, body: MOCK.errorBody('Login required') };
+  }
+  if (call.params.Login === String(SCENARIO.ERROR_ID) || call.params.Login === 'fail') {
+    return { ErrorMessage: 'Save failed', Status: 'UnexpectedError' };
+  }
+  return { Message: 'Ok' };
+}, { delay: 600, method: 'post' });

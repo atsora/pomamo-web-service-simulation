@@ -2,17 +2,24 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-var MachinePieJSON3 = { 'Permanent': true, 'PieType': 'cycleprogresspie' };
-var MachinePieJSON18 = { 'Permanent': true, 'PieType': 'partproductionstatuspie' };
+// Mock for `Machine/Pie?MachineId=<id>` (or `GroupId=<id>`).
+// Tells the dashboard which pie variant to use for a given machine/group.
 
-$.mockjax({
-  url: 'http://localhost:8082/Machine/Pie?GroupId=3',
-  responseTime: 500,
-  responseText: MachinePieJSON3
-});
+require('./_helpers');
 
-$.mockjax({
-  url: 'http://localhost:8082/Machine/Pie?GroupId=18',
-  responseTime: 500,
-  responseText: MachinePieJSON18
-});
+var MachinePieCycle = { Permanent: true, PieType: 'cycleprogresspie' };
+var MachinePiePart  = { Permanent: true, PieType: 'partproductionstatuspie' };
+
+MOCK.respond('Machine/Pie', {
+  byMachineId: {
+    1: MachinePieCycle, // Machine 1 → cycle progress
+    2: MachinePiePart,  // Machine 2 → part production status
+    3: MachinePieCycle  // Machine 3 → cycle progress
+  },
+  byGroupId: {
+    100: MachinePiePart,
+    101: MachinePieCycle,
+    102: MachinePieCycle
+  },
+  default: MachinePieCycle
+}, { delay: 200 });

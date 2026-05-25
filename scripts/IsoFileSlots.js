@@ -2,57 +2,41 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-var IsoFileSlotJSON1 = {
-  'Range': '[2013-09-03T08:28:37.000Z,2013-09-03T08:37:00.000Z)',
-  'Display': 'IsoFile_1',
-  'BgColor': '#FF0000',
-  'FgColor': '#00FF00'
-};
-var IsoFileSlotJSON2 = {
-  'Range': '[2013-09-03T08:39:00.000Z,2013-09-03T08:43:00.000Z)',
-  'Display': 'IsoFile_2',
-  'BgColor': '#00FF00',
-  'FgColor': '#0000FF'
-};
-var IsoFileSlotJSON3 = {
-  'Range': '[2013-09-03T08:45:00.000Z,2013-09-03T08:50:00.000Z)',
-  'Display': 'IsoFile_3_BIG BIG BIG BIG BIG BIG name',
-  'BgColor': '#0000FF',
-  'FgColor': '#FF0000'
-};
-var IsoFileSlotJSON4 = {
-  'Range': '[2013-09-03T08:52:00.000Z,2013-09-03T08:54:36.000Z)',
-  'Display': 'IsoFile_4_with_a_long_name',
-  'BgColor': '#ededed',
-  'FgColor': '#232323'
+// Mock for `IsoFileSlots?MachineId=<id>&Range=<range>` — ISO-file slots
+// over the last 8 hours.
+
+require('./_helpers');
+
+var IsoFileSlotsJSON1 = {
+  Range: '{{now-8h..now}}',
+  IsoFileSlots: [
+    { Range: '{{now-8h..now-6h}}', Display: 'IsoFile_A',                       BgColor: '#2E7D32', FgColor: '#FFFFFF' },
+    { Range: '{{now-6h..now-4h}}', Display: 'IsoFile_B (long display name)',   BgColor: '#0080FF', FgColor: '#FFFFFF' },
+    { Range: '{{now-4h..now-2h}}', Display: 'IsoFile_C',                       BgColor: '#7B1FA2', FgColor: '#FFFFFF' },
+    { Range: '{{now-2h..now}}',    Display: 'IsoFile_D',                       BgColor: '#FFC107', FgColor: '#000000' }
+  ]
 };
 
-var IsoFileSlotListJSON1 = {
-  'Range': '[2013-09-03T08:28:37.000Z,2013-09-03T08:54:36.000Z)',
-  'IsoFileSlots': [IsoFileSlotJSON1, IsoFileSlotJSON2, IsoFileSlotJSON3, IsoFileSlotJSON4]
+var IsoFileSlotsJSON2 = {
+  Range: '{{now-8h..now}}',
+  IsoFileSlots: [
+    { Range: '{{now-8h..now-4h}}', Display: 'IsoFile_A', BgColor: '#2E7D32', FgColor: '#FFFFFF' },
+    { Range: '{{now-4h..now}}',    Display: 'IsoFile_B', BgColor: '#0080FF', FgColor: '#FFFFFF' }
+  ]
 };
-var invalidMachineResponse = {
-  'ErrorMessage': 'Invalid machine',
-  'Status': 'WrongRequestParameter'
+
+var IsoFileSlotsJSON3 = {
+  Range: '{{now-8h..now}}',
+  IsoFileSlots: [
+    { Range: '{{now-8h..now}}', Display: 'IsoFile_LATHE', BgColor: '#7B1FA2', FgColor: '#FFFFFF' }
+  ]
 };
 
-var IsoFileSlotsJSON_details = '{"IsoFileSlots":[{"Details":[{"Range":"[2017-01-16T06:12:39Z,2017-01-16T08:53:27Z)","Display":"KISSEN.H"}],"Id":6,"Display":"KISSEN.H","Range":"[2017-01-16T06:12:39Z,2017-01-16T08:53:27Z)","FgColor":"#000000","BgColor":"#00FFFF"}],"Range":"[2017-01-16T08:28:27Z,2017-01-16T08:28:27Z]"}';
-
-$.mockjax({
-  url: 'http://localhost:8082/IsoFileSlots?MachineId=18*',
-  responseTime: 1000,
-  responseText: IsoFileSlotListJSON1
-});
-
-$.mockjax({
-  url: 'http://localhost:8082/IsoFileSlots?MachineId=19*',
-  responseTime: 1000,
-  responseText: invalidMachineResponse,
-  status: 200
-});
-
-$.mockjax({
-  url: 'http://localhost:8082/IsoFileSlots?MachineId=3*',
-  responseTime: 1000,
-  responseText: IsoFileSlotsJSON_details
-});
+MOCK.respond('IsoFileSlots', {
+  byMachineId: {
+    1: IsoFileSlotsJSON1,
+    2: IsoFileSlotsJSON2,
+    3: IsoFileSlotsJSON3
+  },
+  default: IsoFileSlotsJSON1
+}, { delay: 400 });

@@ -2,35 +2,22 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-var ShiftSlotJSON1 = {
-  'ShiftBegin' : '2015-04-01T08:00:00.000Z',
-  'ShiftEnd' : '2015-04-01T12:00:00.000Z',
-  'ShiftColor' : '#FF0000',
-  'ShiftDisplay' : 'Morning'
-};
-var ShiftSlotJSON2 = {
-  'ShiftBegin' : '2015-04-01T14:00:00.000Z',
-  'ShiftEnd' : '2015-04-01T18:00:00.000Z',
-  'ShiftColor' : '#00FF00',
-  'ShiftDisplay' : 'Afternoon'
-};
+// Mock for `GetListOfShiftSlot?Begin=<iso>&End=<iso>` — list of shift slots
+// in a 24h window centred on "now".
+//
+// Static response (no machine/group key).
 
-var ShiftSlotJSON3 = {
-  'ShiftBegin' : '2015-04-01T22:00:00.000Z',
-  'ShiftEnd' : '2015-04-02T06:00:00.000Z',
-  'ShiftColor' : '#0000FF',
-  'ShiftDisplay' : 'Night'
-};
+require('./_helpers');
 
-var ShiftSlotListJSON1 = {
-  'Begin' : '2015-04-01T08:00:00.000Z',
-  'End' : '2015-04-02T08:00:00.000Z',
-  'List' : [ShiftSlotJSON1, ShiftSlotJSON2, ShiftSlotJSON3]
-};
-
-$.mockjax({
-  url : /^http:\/\/localhost:8082\/GetListOfShiftSlot\?Begin=2015-04-01T08:00:00.*Z$/,
-  responseTime : 1000,
-  responseText : ShiftSlotListJSON1
-});
-
+MOCK.respond('GetListOfShiftSlot', {
+  static: {
+    Begin: '{{now-12h}}',
+    End:   '{{now+12h}}',
+    Range: '{{now-12h..now+12h}}',
+    List: [
+      { ShiftBegin: '{{now-12h}}', ShiftEnd: '{{now-4h}}',  ShiftColor: '#2E7D32', ShiftDisplay: 'Morning'   },
+      { ShiftBegin: '{{now-4h}}',  ShiftEnd: '{{now+4h}}',  ShiftColor: '#FFC107', ShiftDisplay: 'Afternoon' },
+      { ShiftBegin: '{{now+4h}}',  ShiftEnd: '{{now+12h}}', ShiftColor: '#7B1FA2', ShiftDisplay: 'Night'     }
+    ]
+  }
+}, { delay: 400 });

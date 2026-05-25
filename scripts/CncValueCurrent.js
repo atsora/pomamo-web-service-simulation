@@ -2,99 +2,81 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-var currentCncValue_future = '{"ByMachineModule":[{"ByField":[{"Field":{"Unit":"mm/min"},"DateTime":"2078-04-16T03:24:09Z","Value":"2500"}]}]}';
-var currentCncValue_past = '{"ByMachineModule":[{"ByField":[{"Field":{"Unit":"mm/min"},"DateTime":"2006-10-01T14:22:08Z","Value":"2500"}]}]}';
+// Mock for `CncValue/Current?MachineId=<id>[&FieldIds=126]`.
+// Two shapes share the same endpoint:
+//   - FieldIds=126 → stacklight composite (consumed by x-stacklight)
+//   - no FieldIds  → feed-rate snapshot   (consumed by x-currentcncvalue, x-currenttool)
+// Lookup tables below carry each variant; the wrapper switches by FieldIds.
 
-var currentCncValue_stacklightRed = {
-  'ByMachineModule': [{
-    'MachineModule': { 'Id': '65', 'Display': 'SimulToolLife', 'Main': 'true' },
-    'ByField': [{
-      'Color': '#FF0000',
-      'DateTime': '2017-10-31T10:54:37Z',
-      'Field': { 'Id': '126', 'Display': 'Stack light' },
-      'Value': {
-        'Lights':
-          [{ 'Color': 'Red', 'Status': 'On' },
-          { 'Color': 'Yellow', 'Status': 'Off' },
-          { 'Color': 'Green', 'Status': 'Off' }],
-      }
-    }]
+require('./_helpers');
+
+var FeedRateJSON1 = {
+  ByMachineModule: [{
+    ByField: [{ Field: { Unit: 'mm/min' }, DateTime: '{{now-1m}}', Value: '937'  }]
   }]
 };
-var currentCncValue_stacklightGreen = {
-  'ByMachineModule': [{
-    'MachineModule': { 'Id': '33', 'Display': 'ACMEWC110-2', 'Main': 'true' },
-    'ByField': [{
-      'Color': '#008000',
-      'DateTime': '2017-10-31T10:54:36Z',
-      'Field': { 'Id': '126', 'Display': 'Stack light' },
-      'Value': {
-        'Lights':
-          [{ 'Color': 'Red', 'Status': 'Off' },
-          { 'Color': 'Yellow', 'Status': 'Off' },
-          { 'Color': 'Green', 'Status': 'On' }],
-      }
-    }]
+var FeedRateJSON2 = {
+  ByMachineModule: [{
+    ByField: [{ Field: { Unit: 'mm/min' }, DateTime: '{{now-1m}}', Value: '2074' }]
+  }]
+};
+var FeedRateJSON3 = {
+  ByMachineModule: [{
+    ByField: [{ Field: { Unit: 'mm/min' }, DateTime: '{{now-1m}}', Value: '3211' }]
   }]
 };
 
-var currentCncValue_stacklight5colors = {
-  'ByMachineModule': [{
-    'MachineModule': { 'Id': '33', 'Display': 'ACMEWC110-2', 'Main': 'true' },
-    'ByField': [{
-      'Color': '#008000',
-      'DateTime': '2017-10-31T10:54:36Z',
-      'Field': { 'Id': '126', 'Display': 'Stack light' },
-      'Value': {
-        'Lights':
-          [{ 'Color': 'Red', 'Status': 'Off' },
-          { 'Color': 'Yellow', 'Status': 'Off' },
-          { 'Color': 'Green', 'Status': 'On' },
-          { 'Color': 'Blue', 'Status': 'On' },
-          { 'Color': 'White', 'Status': 'On' }],
-      }
+var StacklightJSON1 = {
+  ByMachineModule: [{
+    MachineModule: { Id: '33', Display: 'Module-Main', Main: 'true' },
+    ByField: [{
+      Color: '#2E7D32', DateTime: '{{now}}',
+      Field: { Id: '126', Display: 'Stack light' },
+      Value: { Lights: [
+        { Color: 'Red',    Status: 'Off' },
+        { Color: 'Yellow', Status: 'Off' },
+        { Color: 'Green',  Status: 'On'  }
+      ] }
+    }]
+  }]
+};
+var StacklightJSON2 = {
+  ByMachineModule: [{
+    MachineModule: { Id: '33', Display: 'Module-Main', Main: 'true' },
+    ByField: [{
+      Color: '#FFC107', DateTime: '{{now}}',
+      Field: { Id: '126', Display: 'Stack light' },
+      Value: { Lights: [
+        { Color: 'Red',    Status: 'Off' },
+        { Color: 'Yellow', Status: 'On'  },
+        { Color: 'Green',  Status: 'Off' }
+      ] }
+    }]
+  }]
+};
+var StacklightJSON3 = {
+  ByMachineModule: [{
+    MachineModule: { Id: '33', Display: 'Module-Main', Main: 'true' },
+    ByField: [{
+      Color: '#D32F2F', DateTime: '{{now}}',
+      Field: { Id: '126', Display: 'Stack light' },
+      Value: { Lights: [
+        { Color: 'Red',    Status: 'On'  },
+        { Color: 'Yellow', Status: 'Off' },
+        { Color: 'Green',  Status: 'Off' }
+      ] }
     }]
   }]
 };
 
-var invalidMachineResponse = {
-  'ErrorMessage': 'Invalid machine',
-  'Status': 'WrongRequestParameter'
-};
+var FEED_RATE   = { 1: FeedRateJSON1,   2: FeedRateJSON2,   3: FeedRateJSON3 };
+var STACKLIGHTS = { 1: StacklightJSON1, 2: StacklightJSON2, 3: StacklightJSON3 };
 
-$.mockjax({
-  url: /^http:\/\/localhost:8082\/CncValue\/Current\?MachineId=18(&.*)?$/,
-  responseTime: 1000,
-  responseText: currentCncValue_future
-});
-
-$.mockjax({
-  url: /^http:\/\/localhost:8082\/CncValue\/Current\?MachineId=19(&.*)?$/,
-  responseTime: 1000,
-  responseText: currentCncValue_past
-});
-
-$.mockjax({
-  url: /^http:\/\/localhost:8082\/CncValue\/Current\?MachineId=20(&.*)?$/,
-  responseTime: 1000,
-  responseText: invalidMachineResponse,
-  status: 200
-});
-
-$.mockjax({
-  url: /^http:\/\/localhost:8082\/CncValue\/Current\?FieldIds=126&MachineId=54(&.*)?$/,
-  responseTime: 1000,
-  responseText: currentCncValue_stacklightRed
-});
-
-$.mockjax({
-  url: /^http:\/\/localhost:8082\/CncValue\/Current\?FieldIds=126&MachineId=27(&.*)?$/,
-  responseTime: 1000,
-  responseText: currentCncValue_stacklightGreen
-});
-
-$.mockjax({
-  url: /^http:\/\/localhost:8082\/CncValue\/Current\?FieldIds=126&MachineId=5(&.*)?$/,
-  responseTime: 1000,
-  responseText: currentCncValue_stacklight5colors
-});
+MOCK.respond('CncValue/Current', function (call) {
+  if (!call.params.MachineId) {
+    return { __status: 400, body: MOCK.errorBody('MachineId required') };
+  }
+  var table = call.params.FieldIds === '126' ? STACKLIGHTS : FEED_RATE;
+  var n = Number(call.params.MachineId);
+  return table[n] || table[1];
+}, { delay: 300 });

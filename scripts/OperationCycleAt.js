@@ -2,94 +2,40 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-var operationCycle_1 =
-{
-  "Range": "2014-05-04T12:00:00.000Z;2014-05-05T14:00:00.000Z",
-  "EstimatedStart": false,
-  "EstimatedEnd": false,
-  "DeliverablePieces": [
-    { "Display": "piece1" }, { "Display": "piece_2" }, { "Display": "piece_number_3" }
-  ]
-};
-$.mockjax({
-  url: /^http:\/\/localhost:8082\/OperationCycleAt\?MachineId=1.*$/,
-  responseTime: 100,
-  responseText: operationCycle_1
-});
+// Mock for `OperationCycleAt?MachineId=<id>&At=<iso>` — operation cycle
+// active at a given instant + the parts it delivered.
 
-var operationCycle_2 =
-{
-  "Range": "2014-05-04T12:00:00.000Z;2014-05-05T14:00:00.000Z",
-  "EstimatedStart": true,
-  "EstimatedEnd": false,
-  "DeliverablePieces": [
-    { "Display": "piece1" }, { "Display": "piece_2" }, { "Display": "piece_number_3" }
-  ]
-};
-$.mockjax({
-  url: 'http://localhost:8082/OperationCycleAt?MachineId=2*',
-  responseTime: 100,
-  responseText: operationCycle_2
-});
+require('./_helpers');
 
-
-var operationCycle_3 =
-{
-  "Range": "2014-05-04T12:00:00.000Z;2014-05-05T14:00:00.000Z",
-  "EstimatedStart": false,
-  "EstimatedEnd": true,
-  "DeliverablePieces": [
-    { "Display": "piece1" }, { "Display": "piece_2" }
-  ]
-};
-$.mockjax({
-  url: /^http:\/\/localhost:8082\/OperationCycleAt\?MachineId=3.*$/,
-  responseTime: 100,
-  responseText: operationCycle_3
-});
-
-
-var operationCycle_4 =
-{
-  "Range": "2014-05-04T12:00:00.000Z;2014-05-05T14:00:00.000Z",
-  "EstimatedStart": true,
-  "EstimatedEnd": true,
-  "DeliverablePieces": [
-    { "Display": "piece1" }
-  ]
-};
-$.mockjax({
-  url: 'http://localhost:8082/OperationCycleAt?MachineId=4*',
-  responseTime: 100,
-  responseText: operationCycle_4
-});
-
-var operationCycle_5 =
-{
-  "Range": "2014-05-05T12:00:00.000Z;2014-05-05T14:00:00.000Z",
-  "EstimatedStart": true,
-  "EstimatedEnd": false,
-  "DeliverablePieces": [
-    { "Display": "piece1" }, { "Display": "piece_2" }
-  ]
-};
-$.mockjax({
-  url: 'http://localhost:8082/OperationCycleAt?MachineId=5*',
-  responseTime: 100,
-  responseText: operationCycle_5
-});
-
-var operationCycle_6 =
-{
-  "Range": "2014-05-05T12:00:00.000Z;2014-05-05T14:00:00.000Z",
-  "EstimatedStart": true,
-  "EstimatedEnd": true,
-  "DeliverablePieces": [
-    { "Display": "piece1" }
-  ]
-};
-$.mockjax({
-  url: 'http://localhost:8082/OperationCycleAt?MachineId=6*',
-  responseTime: 100,
-  responseText: operationCycle_6
-});
+MOCK.respond('OperationCycleAt', {
+  byMachineId: {
+    1: {
+      Range: '{{now-25m}};{{now-5m}}',
+      EstimatedStart: false,
+      EstimatedEnd: false,
+      DeliverablePieces: [
+        { CountValue: 1, SerialNumber: 'SN-1-A' },
+        { CountValue: 1, SerialNumber: 'SN-1-B' }
+      ]
+    },
+    2: {
+      Range: '{{now-20m}};{{now-3m}}',
+      EstimatedStart: false,
+      EstimatedEnd: false,
+      DeliverablePieces: [
+        { CountValue: 1, SerialNumber: 'SN-2-A' }
+      ]
+    },
+    3: {
+      Range: '{{now-18m}};{{now-1m}}',
+      EstimatedStart: false,
+      EstimatedEnd: false,
+      DeliverablePieces: [
+        { CountValue: 1, SerialNumber: 'SN-3-A' },
+        { CountValue: 1, SerialNumber: 'SN-3-B' },
+        { CountValue: 1, SerialNumber: 'SN-3-C' }
+      ]
+    }
+  },
+  default: { Range: '{{now-15m}};{{now-1m}}', EstimatedStart: true, EstimatedEnd: true, DeliverablePieces: [] }
+}, { delay: 300 });

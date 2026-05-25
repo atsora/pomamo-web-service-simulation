@@ -2,234 +2,89 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-// WARNING ! Use same structure as defined in WorkStructure !
+// Mock for `WorkRead?Kind=<X>&Id=<Y>` — full record of one node in the
+// work-structure tree (used by x-workexplorer to fill the form).
+//
+// Returns { Id, Kind, Display, Parents, Children, Properties: [{Key, Value}] }
+// Parents/Children are hierarchical neighbours; Properties carries the saved
+// values that hydrate the form previously built from WorkStructure.
 
-var WorkReadJSON_missingKind = {
-  'ErrorMessage': 'Missing work kind',
-  'Status': 'WrongRequestParameter'
-};
-var WorkReadJSON_badKind = {
-  'ErrorMessage': 'Bad work kind',
-  'Status': 'WrongRequestParameter'
-};
+require('./_helpers');
 
-
-var WorkReadJSON_op1 = {
-  'Id': 1,
-  'Kind': 'Operation',
-  'Display': 'Op_1',
-  // Revision will not be used in version 9.0
-  // Maybe restore later
-  /*'AvailableRevisions': [ // Can be added later
-    {
-      'Number': 1
+(function () {
+  // Per-Kind values: map of Id → { Display, Properties }
+  var CATALOG = {
+    WorkOrder: {
+      1: { Display: 'WO-1001 (full)', Code: 'WO-1001', Name: 'Cover series 2026 Q1', Status: 'InProgress' },
+      2: { Display: 'WO-1002 (planned)', Code: 'WO-1002', Name: 'Spare parts batch', Status: 'Planned' }
     },
-    {
-      'Number': 2
+    Project: {
+      1: { Display: 'PRJ-Cover', Code: 'PRJ-COVER', Name: 'Cover programme' },
+      2: { Display: 'PRJ-Spare', Code: 'PRJ-SPARE', Name: 'Spare parts programme' }
+    },
+    Part: {
+      1: { Display: 'PART-A (cover)', Code: 'PART-A', Name: 'Cover plate v3', TargetCount: 500 },
+      2: { Display: 'PART-B (housing)', Code: 'PART-B', Name: 'Housing v2', TargetCount: 200 }
+    },
+    Component: {
+      1: { Display: 'COMP-rough', Code: 'COMP-ROUGH', Name: 'Rough blank', QuantityPerPart: 1 },
+      2: { Display: 'COMP-finish', Code: 'COMP-FIN', Name: 'Finished cover', QuantityPerPart: 1 }
+    },
+    Operation: {
+      1: { Display: 'OP-1042-A (full)', Code: 'OP-1042-A', Name: 'Roughing pass',
+           MachiningDuration: 240, SetupDuration: 600, TargetCycleTime: 180, Active: true },
+      2: { Display: 'OP-1042-B (sparse)', Code: 'OP-1042-B', Name: 'Finishing pass',
+           MachiningDuration: 180, SetupDuration: 300, Active: false }
     }
-  ],
-  'Revision': {
-    'Number': 2,
-    'DateTime': '2020-02-15T20:00:00Z',
-    'Description': 'Revision description',
-    'Default': true
-  },*/
-  'Parents': [ // Affichage selon order si défini, sinon selon l'ordre ci dessous
-    {
-      'Id': 2,
-      'Kind': 'Component',
-      'Display': 'Comp_2'
-    },
-    {
-      'Id': 4,
-      'Kind': 'Part',
-      'Display': 'Part_4'
+  };
+
+  // Relations between kinds — used by the parents/children panes.
+  // Each pair (kind → otherKind) lists pre-canned related ids.
+  var PARENTS_OF = {
+    Operation:  function (id) { return [{ Id: 1, Kind: 'Component', Display: 'COMP-rough', Order: 1 }]; },
+    Component:  function (id) { return [{ Id: 1, Kind: 'Part', Display: 'PART-A (cover)', Order: 1 }]; },
+    Part:       function (id) { return [{ Id: 1, Kind: 'Project', Display: 'PRJ-Cover', Order: 1 }]; },
+    Project:    function (id) { return [{ Id: 1, Kind: 'WorkOrder', Display: 'WO-1001 (full)', Order: 1 }]; },
+    WorkOrder:  function (id) { return []; }
+  };
+
+  var CHILDREN_OF = {
+    WorkOrder:  function (id) { return [{ Id: 1, Kind: 'Project', Display: 'PRJ-Cover', Order: 1 }]; },
+    Project:    function (id) { return [{ Id: 1, Kind: 'Part', Display: 'PART-A (cover)', Order: 1 }, { Id: 2, Kind: 'Part', Display: 'PART-B (housing)', Order: 2 }]; },
+    Part:       function (id) { return [{ Id: 1, Kind: 'Component', Display: 'COMP-rough', Order: 1 }, { Id: 2, Kind: 'Component', Display: 'COMP-finish', Order: 2 }]; },
+    Component:  function (id) { return [{ Id: 1, Kind: 'Operation', Display: 'OP-1042-A (full)', Order: 1 }, { Id: 2, Kind: 'Operation', Display: 'OP-1042-B (sparse)', Order: 2 }]; },
+    Operation:  function (id) { return []; }
+  };
+
+  function propertyValues (kind, id) {
+    var record = (CATALOG[kind] || {})[id];
+    if (!record) return [];
+    return Object.keys(record)
+      .filter(function (k) { return k !== 'Display'; })
+      .map(function (k) { return { Key: k, Value: record[k] }; });
+  }
+
+  MOCK.respond('WorkRead', function (call) {
+    if (!call.params.Kind) {
+      return { __status: 400, body: MOCK.errorBody('Missing work kind') };
     }
-  ],
-  'Children': [ // Affichage selon order si défini, sinon selon l'ordre ci dessous
-    {
-      'Id': 67,
-      'Kind': 'Sequence',
-      'Display': 'Seq_67',
-      'Order': 12
-    },
-    {
-      'Id': 66,
-      'Kind': 'Sequence',
-      'Display': 'Seq_66 bottom for vertical adaptation',
-      'Order': 23
-    },
-    {
-      'Id': 68,
-      'Kind': 'Sequence',
-      'Display': 'Seq_68',
-      'Order': 5
-    },
-    {
-      'Id': 69,
-      'Kind': 'Sequence',
-      'Display': 'Seq_69 on top with long text to check what happens',
-      'Order': 3
+    var kind = call.params.Kind;
+    var id = Number(call.params.Id || '1');
+    var record = (CATALOG[kind] || {})[id];
+    if (!record) {
+      // Unknown id: still return a minimal record so the form can render.
+      return {
+        Id: id, Kind: kind, Display: kind + '_' + id,
+        Parents: [], Children: [], Properties: []
+      };
     }
-  ],
-  'Properties': [
-    {
-      'Key': 'Name',
-      'Value': 'my name'
-    },
-    {
-      'Key': 'Code',
-      'Value': 'my code'
-    },
-    // No link is sent (not defined) - possible
-    // Default will be used to fill at creation
-    // If nullable, nothing can be sent
-    {
-      'Key': 'Link',
-      'Value': 'a URL to see what happens'
-    },
-    {
-      'Key': 'IntValue',
-      'Value': 54
-    },
-    {
-      'Key': 'Duration',
-      'Value': 540366 // in seconds == integer ! 6d 06:06:06
-    },
-    {
-      'Key': 'Type',
-      'Value': 'T2'
-    },
-    {
-      'Key': 'Weight',
-      'Value': 1.5
-    },
-    {
-      'Key': 'IsBeautiful',
-      'Value': false,
-    }
-  ]
-};
-
-
-// All values are un-set -> to check display
-var WorkReadJSON_op_not_set = {
-  'Id': 2,
-  'Kind': 'Operation',
-  'Display': 'Op_2',
-  /*'AvailableRevisions': [ // Can be added later
-    {
-      'Number': 1
-    }
-  ],
-  'Revision': {
-    'Number': 1,
-    'DateTime': '2020-02-15T20:00:00Z',
-    'Description': 'Revision description',
-    'Default': true
-  },*/
-  'Parents': [],
-  'Children': [],
-  'Properties': []
-};
-
-var WorkReadJSON_comp2 = {
-  'Id': 2,
-  'Kind': 'Component',
-  'Display': 'Comp_2',
-  /*'AvailableRevisions': [ // Can be added later
-    {
-      'Number': 1
-    }
-  ],
-  'Revision': {
-    'Number': 1,
-    'DateTime': '2020-02-15T20:00:00Z',
-    'Description': 'Revision description',
-    'Default': true
-  },*/
-  'Properties': [
-    {
-      'Key': 'Name',
-      'Value': 'C2_name'
-    },
-    {
-      'Key': 'Code',
-      'Value': 'CodeComp2_R1'
-    }
-  ]
-};
-
-var WorkReadJSON_proj = {
-  'Id': 3,
-  'Kind': 'Project',
-  'Display': 'Proj_3'
-  // To fill
-};
-var WorkReadJSON_part = {
-  'Id': 4,
-  'Kind': 'Part',
-  'Display': 'Part_4'
-  // To fill
-};
-var WorkReadJSON_workorder = {
-  'Id': 5,
-  'Kind': 'WorkOrder',
-  'Display': 'W_O_5'
-  // To fill
-};
-
-// REQUESTS 
-
-// ERRORS
-$.mockjax({
-  url: 'http://localhost:8082/WorkRead',
-  responseTime: 1000,
-  responseText: WorkReadJSON_missingKind
-});
-
-$.mockjax({
-  url: 'http://localhost:8082/WorkRead?Kind=pipo',
-  responseTime: 1000,
-  responseText: WorkReadJSON_badKind // and no id
-});
-
-$.mockjax({
-  url: 'http://localhost:8082/WorkRead?Kind=Operation&Id=504',
-  status: 504,
-  responseTime: 1000
-});
-
-// OK
-$.mockjax({
-  url: 'http://localhost:8082/WorkRead?Kind=Operation&Id=1',
-  responseTime: 1000,
-  responseText: WorkReadJSON_op1
-});
-
-$.mockjax({
-  url: 'http://localhost:8082/WorkRead?Kind=Operation&Id=2',
-  responseTime: 1000,
-  responseText: WorkReadJSON_op_not_set
-});
-$.mockjax({
-  url: 'http://localhost:8082/WorkRead?Kind=Component&Id=2',
-  responseTime: 1000,
-  responseText: WorkReadJSON_comp2
-});
-$.mockjax({
-  url: 'http://localhost:8082/WorkRead?Kind=Project&Id=*',
-  responseTime: 1000,
-  responseText: WorkReadJSON_proj
-});
-$.mockjax({
-  url: 'http://localhost:8082/WorkRead?Kind=Part&Id=*',
-  responseTime: 1000,
-  responseText: WorkReadJSON_part
-});
-$.mockjax({
-  url: 'http://localhost:8082/WorkRead?Kind=WorkOrder&Id=*',
-  responseTime: 1000,
-  responseText: WorkReadJSON_workorder
-});
-
+    return {
+      Id: id,
+      Kind: kind,
+      Display: record.Display,
+      Parents: (PARENTS_OF[kind] || function () { return []; })(id),
+      Children: (CHILDREN_OF[kind] || function () { return []; })(id),
+      Properties: propertyValues(kind, id)
+    };
+  }, { delay: 300 });
+})();

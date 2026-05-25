@@ -2,164 +2,29 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-var GetMachineJSON18 = { 'Id': '18', 'Display': 'Simul1' };
-var GetMachineJSON3 = { 'Id': '3', 'Display': 'HeidenhainLsv2' };
-var GetMachineJSON19 = { 'Id': '19', 'Display': 'Machine19DisplayWithALongName' };
-var GetMachineJSON21 = { 'Id': '21', 'Display': 'Machine_21' };
-var GetMachineJSON22 = { 'Id': '22', 'Display': 'Machine_22' };
+// Mock for `Machine/Name?MachineId=<id>` and `Machine/Name?GroupId=<id>`.
+// One declarative map per key (MachineId / GroupId). The wrapper resolves
+// whichever param the caller provided.
 
-var invalidMachineResponse = {
-  'ErrorMessage': 'Invalid machine',
-  'Status': 'WrongRequestParameter'
+require('./_helpers');
+require('./scenario');
+
+var GetMachineByMachineId = {
+  1: { Id: '1', Display: 'Machine 1',   MonitoredMachine: true  },
+  2: { Id: '2', Display: 'Machine 2',   MonitoredMachine: true  },
+  3: { Id: '3', Display: 'Machine 3',  MonitoredMachine: true  },
+  4: { Id: '4', Display: 'Machine 4', MonitoredMachine: false }
 };
 
-/*
-$.mockjax({
-  url : 'http://localhost:8082/Machine/Name?MachineId=18',
-  responseTime : 10,
-  responseText : GetMachineJSON18
-});
+var GetMachineByGroupId = {};
+GetMachineByGroupId[SCENARIO.MAIN_GROUP]  = { Id: String(SCENARIO.MAIN_GROUP),  Display: 'All machines' };
+GetMachineByGroupId[SCENARIO.MILL_GROUP]  = { Id: String(SCENARIO.MILL_GROUP),  Display: 'Milling cell' };
+GetMachineByGroupId[SCENARIO.LATHE_GROUP] = { Id: String(SCENARIO.LATHE_GROUP), Display: 'Lathe cell'   };
 
-$.mockjax({
-  url : 'http://localhost:8082/Machine/Name?MachineId=19',
-  responseTime : 10,
-  responseText : GetMachineJSON19
-});
-
-$.mockjax({
-  url : 'http://localhost:8082/Machine/Name?MachineId=128',
-  responseTime : 10,
-  responseText : invalidMachineResponse,
-  status:200
-});
-*/
-
-$.mockjax({
-  url : 'http://localhost:8082/Machine/Name?MachineId=3',
-  responseTime: 500,
-  responseText: GetMachineJSON3
-});
-
-$.mockjax({
-  url: 'http://localhost:8082/Machine/Name?MachineId=18',
-  responseTime: 1000,
-  responseText: GetMachineJSON18
-});
-
-$.mockjax({
-  url: 'http://localhost:8082/Machine/Name?MachineId=19',
-  responseTime: 1000,
-  responseText: GetMachineJSON19
-});
-
-$.mockjax({
-  url: 'http://localhost:8082/Machine/Name?MachineId=21',
-  responseTime: 1000,
-  responseText: GetMachineJSON21
-});
-
-$.mockjax({
-  url: 'http://localhost:8082/Machine/Name?MachineId=22',
-  responseTime: 1000,
-  responseText: GetMachineJSON22
-});
-
-$.mockjax({
-  url: 'http://localhost:8082/Machine/Name?MachineId=128',
-  responseTime: 1000,
-  responseText: invalidMachineResponse,
-  status:200
-});
-
-$.mockjax({
-  url: 'http://localhost:8082/Machine/Name?MachineId=129',
-  status: 504,
-  responseTime: 1000
-});
-
-
-$.mockjax({
-  url: 'http://localhost:8082/Machine/Name?MachineId=12',
-  responseTime: 1000,
-  responseText: { 'Id': '12', 'Display': '12: Opc-Simulation' }
-});
-$.mockjax({
-  url: 'http://localhost:8082/Machine/Name?MachineId=24',
-  responseTime: 1000,
-  responseText: { 'Id': '24', 'Display': '24: BettcherBox' }
-});
-$.mockjax({
-  url: 'http://localhost:8082/Machine/Name?MachineId=51',
-  responseTime: 1000,
-  responseText: { 'Id': '51', 'Display': '51: T1: Tasks 1' }
-});
-$.mockjax({
-  url: 'http://localhost:8082/Machine/Name?MachineId=52',
-  responseTime: 1000,
-  responseText: { 'Id': '52', 'Display': '52: T2: Tasks 2' }
-});
-
-
-
-$.mockjax({
-  url: 'http://localhost:8082/Machine/Name?GroupId=anc1',
-  responseTime: 500,
-  responseText: { 'Id': 'anc1', 'Display': 'Ancestor 1' }
-});
-$.mockjax({
-  url: 'http://localhost:8082/Machine/Name?GroupId=anc2',
-  responseTime: 500,
-  responseText: { 'Id': 'anc2', 'Display': 'Ancestor 2' }
-});
-$.mockjax({
-  url: 'http://localhost:8082/Machine/Name?GroupId=anc3',
-  responseTime: 500,
-  responseText: { 'Id': 'anc3', 'Display': 'Ancestor 3' }
-});
-$.mockjax({
-  url: 'http://localhost:8082/Machine/Name?GroupId=anc4',
-  responseTime: 500,
-  responseText: { 'Id': 'anc4', 'Display': 'Ancestor 4' }
-});
-
-$.mockjax({
-  url: 'http://localhost:8082/Machine/Name?GroupId=grp',
-  responseTime: 500,
-  responseText: { 'Id': 'grp', 'Display': 'GROUP_display' }
-});
-
-$.mockjax({
-  url: 'http://localhost:8082/Machine/Name?GroupId=G4',
-  responseTime: 500,
-  responseText: { 'Id': '4', 'Display': 'group4' }
-});
-
-$.mockjax({
-  url: 'http://localhost:8082/Machine/Name?GroupId=G17',
-  responseTime: 500,
-  responseText: { 'Id': '17', 'Display': 'group17' }
-});
-
-$.mockjax({
-  url: 'http://localhost:8082/Machine/Name?GroupId=218',
-  responseTime: 500,
-  responseText: { 'Id': '218', 'Display': 'display218' }
-});
-
-$.mockjax({
-  url: 'http://localhost:8082/Machine/Name?GroupId=219',
-  responseTime: 500,
-  responseText: { 'Id': '219', 'Display': 'display219' }
-});
-
-$.mockjax({
-  url: 'http://localhost:8082/Machine/Name?GroupId=220',
-  responseTime: 500,
-  responseText: { 'Id': '220', 'Display': 'display220' }
-});
-
-$.mockjax({
-  url: 'http://localhost:8082/Machine/Name?GroupId=221',
-  responseTime: 500,
-  responseText: { 'Id': '221', 'Display': 'display221' }
-});
+MOCK.respond('Machine/Name', {
+  byMachineId: GetMachineByMachineId,
+  byGroupId:   GetMachineByGroupId,
+  // Default kicks in for unknown IDs — keeps demos from breaking when they
+  // request an ID outside the scenario (e.g. machine 18 from a legacy demo).
+  default: { Id: '?', Display: 'Unknown' }
+}, { delay: 200 });

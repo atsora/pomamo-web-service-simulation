@@ -2,40 +2,20 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-var OperationPPRJSON18 = {
-  'Range': '[2020-08-11T07:00:00Z,2020-08-11T08:00:00Z)',
-  'NbPieces': 666,
-  'InProgress': true
-};
+// Mock for `Operation/PartProductionRange?MachineId|GroupId=<id>&Range=<range>`.
 
-var OperationPPRJSON19 = {
-  'Range': '[2020-08-11T07:00:00Z,2020-08-11T08:00:00Z)',
-  'NbPieces': 55,
-  'Goal': 60,
-  'InProgress': false
-};
+require('./_helpers');
 
-var invalidMachineResponse = {
-  'ErrorMessage': 'Invalid machine',
-  'Status': 'WrongRequestParameter'
-};
-
-
-$.mockjax({
-  url: /^http:\/\/localhost:8082\/Operation\/PartProductionRange\?GroupId=18\&Range=\[201.*$/,
-  responseTime: 2000,
-  responseText: OperationPPRJSON18
-});
-
-$.mockjax({
-  url: /^http:\/\/localhost:8082\/Operation\/PartProductionRange\?GroupId=19\&Range=\[201.*$/,
-  responseTime: 1000,
-  responseText: OperationPPRJSON19
-});
-
-$.mockjax({
-  url: /^http:\/\/localhost:8082\/Operation\/PartProductionRange\?GroupId=22\&Range=\[201.*$/,
-  responseTime: 2000,
-  responseText: invalidMachineResponse,
-  status: 200
-});
+MOCK.respond('Operation/PartProductionRange', {
+  byMachineId: {
+    1: { Range: '{{now-1h..now}}', NbPieces: 48,  Goal: 60, InProgress: true },
+    2: { Range: '{{now-1h..now}}', NbPieces: 33,  Goal: 60, InProgress: true },
+    3: { Range: '{{now-1h..now}}', NbPieces: 57,  Goal: 60, InProgress: true }
+  },
+  byGroupId: {
+    100: { Range: '{{now-1h..now}}', NbPieces: 138, Goal: 180, InProgress: true },
+    101: { Range: '{{now-1h..now}}', NbPieces:  81, Goal: 120, InProgress: true },
+    102: { Range: '{{now-1h..now}}', NbPieces:  57, Goal:  60, InProgress: true }
+  },
+  default: { Range: '{{now-1h..now}}', NbPieces: 0, Goal: 60, InProgress: false }
+}, { delay: 400 });

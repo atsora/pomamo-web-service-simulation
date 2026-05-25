@@ -2,105 +2,47 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-var MilestonesGet_JSON_Default =
-{
-  'Range': '[2020-03-01T10:00:00Z,2020-12-31T10:00:00Z)', // Default = 3 months
-  'Machines': [
-    {
-      'Id': 18,
-      'Display': 'Mach18',
-      'DisplayPriority': 18,
-      'Milestones': [ // Order = last first
-        { 'Id': 1, 'DateTime': '2020-12-25T04:00:56Z', 'Message': 'One more special day' },
-        { 'Id': 2, 'DateTime': '2020-06-15T02:35:20Z', 'Message': 'Another special day' },
-        { 'Id': 3, 'DateTime': '2020-03-11T00:00:00Z', 'Message': 'One special day' }
-      ]
-    },
-    {
-      'MachineId': 51,
-      'MachineDisplay': 'Task1',
-      'DisplayPriority': 1,
-      'Milestones': [
-        { 'Id': 4, 'DateTime': '2020-12-25T00:00:00Z', 'Message': 'One more special day 2' },
-        { 'Id': 5, 'DateTime': '2020-06-15T02:00:00Z', 'Message': 'Another special day 2' },
-        { 'Id': 6, 'DateTime': '2020-03-11T05:00:00Z', 'Message': 'One special day 2' }
-      ]
-    }
-  ]
-};
+// Mock for `MilestonesGet?Range=<range>` — milestone events on ±90 days
+// around "now", one set per machine.
 
-var MilestonesGet_JSON_18 =
-{
-  'Range': '[2020-03-01T10:00:00Z,2020-12-31T10:00:00Z)', // Default = 3 months
-  'Machines': [
-    {
-      'MachineId': 18,
-      'MachineDisplay': 'Mach18',
-      'Milestones': [ // Order = last first
-        { 'Id': 1, 'DateTime': '2020-12-25T04:00:56Z', 'Message': 'One more special day' },
-        { 'Id': 2, 'DateTime': '2020-06-15T02:35:20Z', 'Message': 'Another special day' },
-        { 'Id': 3, 'DateTime': '2020-03-11T00:00:00Z', 'Message': 'One special day' }
-      ]
-    }
-  ]
-};
+require('./_helpers');
 
-
-var MilestonesGet_JSON_51 =
-{
-  'Range': '[2020-03-01T10:00:00Z,2020-12-31T10:00:00Z)', // Default = 3 months
-  'Machines': [
-    {
-      'MachineId': 51,
-      'MachineDisplay': 'Task1',
-      'Milestones': [
-        { 'Id': 4, 'DateTime': '2020-12-25T00:00:00Z', 'Message': 'One more special day 2' },
-        { 'Id': 5, 'DateTime': '2020-06-15T02:00:00Z', 'Message': 'Another special day 2' },
-        { 'Id': 6, 'DateTime': '2020-03-11T05:00:00Z', 'Message': 'One special day 2' }
-      ]
-    }
-  ]
-};
-
-var invalidResponse = {
-  'ErrorMessage': 'Invalid machine',
-  'Status': 'WrongRequestParameter'
-};
-
-$.mockjax({
-  url: 'http://localhost:8082/MilestonesGet',
-  // url could be http://localhost:8082/MilestonesGet?GroupId=18&Range=[from,to)
-  responseTime: 1000,
-  responseText: MilestonesGet_JSON_Default
-});
-
-$.mockjax({
-  url: 'http://localhost:8082/MilestonesGet?GroupId=ALL',
-  responseTime: 1000,
-  responseText: MilestonesGet_JSON_Default
-});
-
-$.mockjax({
-  url: 'http://localhost:8082/MilestonesGet?GroupId=1*',
-  responseTime: 1000,
-  responseText: MilestonesGet_JSON_18
-});
-
-$.mockjax({
-  url: 'http://localhost:8082/MilestonesGet?GroupId=18',
-  responseTime: 1000,
-  responseText: MilestonesGet_JSON_18
-});
-
-$.mockjax({
-  url: 'http://localhost:8082/MilestonesGet?GroupId=5*',
-  responseTime: 1000,
-  responseText: MilestonesGet_JSON_51
-});
-
-$.mockjax({
-  url: 'http://localhost:8082/MilestonesGet?GroupId=2*',
-  responseTime: 1000,
-  responseText: invalidResponse
-});
-
+MOCK.respond('MilestonesGet', {
+  static: {
+    Range: '{{now-2160h..now+2160h}}',  // 2160h = 90 days
+    Machines: [
+      {
+        Id: 1, Display: 'Machine 1', DisplayPriority: 1,
+        Milestones: [
+          { Id: 100, DateTime: '{{now+720h}}', Message: 'Milestone 1 for machine 1' },
+          { Id: 101, DateTime: '{{now}}',      Message: 'Milestone 2 for machine 1' },
+          { Id: 102, DateTime: '{{now-720h}}', Message: 'Milestone 3 for machine 1' }
+        ]
+      },
+      {
+        Id: 2, Display: 'Machine 2', DisplayPriority: 2,
+        Milestones: [
+          { Id: 200, DateTime: '{{now+720h}}', Message: 'Milestone 1 for machine 2' },
+          { Id: 201, DateTime: '{{now}}',      Message: 'Milestone 2 for machine 2' },
+          { Id: 202, DateTime: '{{now-720h}}', Message: 'Milestone 3 for machine 2' }
+        ]
+      },
+      {
+        Id: 3, Display: 'Machine 3', DisplayPriority: 3,
+        Milestones: [
+          { Id: 300, DateTime: '{{now+720h}}', Message: 'Milestone 1 for machine 3' },
+          { Id: 301, DateTime: '{{now}}',      Message: 'Milestone 2 for machine 3' },
+          { Id: 302, DateTime: '{{now-720h}}', Message: 'Milestone 3 for machine 3' }
+        ]
+      },
+      {
+        Id: 4, Display: 'Machine 4', DisplayPriority: 4,
+        Milestones: [
+          { Id: 400, DateTime: '{{now+720h}}', Message: 'Milestone 1 for machine 4' },
+          { Id: 401, DateTime: '{{now}}',      Message: 'Milestone 2 for machine 4' },
+          { Id: 402, DateTime: '{{now-720h}}', Message: 'Milestone 3 for machine 4' }
+        ]
+      }
+    ]
+  }
+}, { delay: 500 });

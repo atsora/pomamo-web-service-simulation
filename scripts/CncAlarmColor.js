@@ -2,28 +2,45 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-var CncAlarmColor_6h_18h = '{"Range":"2014-05-05T06:00:00.000Z;2014-05-05T18:00:00.000Z","Blocks":[{"Range":"2014-05-05T06:00:00.000Z;2014-05-05T07:00:00.000Z","Color":"#00FF00"},{"Range":"2014-05-05T07:00:00.000Z;2014-05-05T08:00:00.000Z","Color":"#FFFF00"},{"Range":"2014-05-05T08:00:00.000Z;2014-05-05T10:00:00.000Z","Color":"#0080FF"},{"Range":"2014-05-05T10:00:00.000Z;2014-05-05T12:00:00.000Z","Color":"#FFFF00"},{"Range":"2014-05-05T12:00:00.000Z;2014-05-05T14:00:00.000Z","Color":"#0080FF"},{"Range":"2014-05-05T14:00:00.000Z;2014-05-05T16:00:00.000Z","Color":"#FFFF00"},{"Range":"2014-05-05T16:00:00.000Z;2014-05-05T17:00:00.000Z","Color":"#0080FF"},{"Range":"2014-05-05T17:00:00.000Z;2014-05-05T22:00:00.000Z","Color":"#00FF00"}]}';
+// Mock for `CncAlarm/Color?MachineId=<id>&Range=<range>` — colour slots
+// consumed by x-cncalarmbar.
 
-var invalidMachineResponse = {
-  'ErrorMessage': 'Invalid machine',
-  'Status': 'WrongRequestParameter'
+require('./_helpers');
+
+var CncAlarmColorJSON1 = {
+  Range: '{{now-8h..now}}',
+  Blocks: [
+    { Range: '{{now-8h..now-7h}}', Color: '#2E7D32' },
+    { Range: '{{now-7h..now-5h}}', Color: '#FFC107' },
+    { Range: '{{now-5h..now-3h}}', Color: '#2E7D32' },
+    { Range: '{{now-3h..now-2h}}', Color: '#D32F2F' },
+    { Range: '{{now-2h..now}}',    Color: '#2E7D32' }
+  ]
 };
 
-$.mockjax({
-  url: /^http:\/\/localhost:8082\/CncAlarm\/Color\?MachineId=18\&Range=\[2014-05-05T06:00:00.000Z\,2014-05-05T18:00:00.000Z\)*$/,
-  responseTime: 1000,
-  responseText: CncAlarmColor_6h_18h
-});
+var CncAlarmColorJSON2 = {
+  Range: '{{now-8h..now}}',
+  Blocks: [
+    { Range: '{{now-8h..now-6h}}', Color: '#2E7D32' },
+    { Range: '{{now-6h..now-4h}}', Color: '#0080FF' },
+    { Range: '{{now-4h..now-2h}}', Color: '#2E7D32' },
+    { Range: '{{now-2h..now}}',    Color: '#FFC107' }
+  ]
+};
 
-$.mockjax({
-  url: /^http:\/\/localhost:8082\/CncAlarm\/Color\?MachineId=18\&Range=\[2014-05-05T06:00:00Z\,2014-05-05T18:00:00Z\)*$/,
-  responseTime: 1000,
-  responseText: CncAlarmColor_6h_18h
-});
+var CncAlarmColorJSON3 = {
+  Range: '{{now-8h..now}}',
+  Blocks: [
+    { Range: '{{now-8h..now-1h}}', Color: '#2E7D32' },
+    { Range: '{{now-1h..now}}',    Color: '#D32F2F' }
+  ]
+};
 
-$.mockjax({
-  url: /^http:\/\/localhost:8082\/CncAlarm\/Color\?MachineId=19\&Range=\[2013-11-07T08:00:00.000Z\,2013-11-08T08:00:00.000Z\)*$/,
-  responseTime: 1000,
-  responseText: invalidMachineResponse,
-  status: 200
-});
+MOCK.respond('CncAlarm/Color', {
+  byMachineId: {
+    1: CncAlarmColorJSON1,
+    2: CncAlarmColorJSON2,
+    3: CncAlarmColorJSON3
+  },
+  default: CncAlarmColorJSON1
+}, { delay: 400 });

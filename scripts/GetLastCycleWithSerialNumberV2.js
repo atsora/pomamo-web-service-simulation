@@ -2,49 +2,28 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-var GetLastCycleWithSerialNumberJSON1 = '{"Begin":"2013-09-03T13:51:40.000Z","End":"2013-09-03T08:54:36.000Z","EstimatedBegin":false,"EstimatedEnd":true, "CycleId":688467,"SerialNumber":"XGH452P","DataMissing":false}';
-var GetLastCycleWithSerialNumberJSON2 = '{"Begin":"2013-09-03T13:51:40.000Z","End":"2013-09-03T08:54:36.000Z","EstimatedBegin":false,"EstimatedEnd":true,"CycleId":688803,"SerialNumber":"PGE965B","DataMissing":true}';
-var GetLastCycleWithSerialNumberJSON3 = '{"Begin":"2013-09-03T08:54:36.000Z","End":"2013-09-03T13:51:40.000Z","EstimatedBegin":false,"EstimatedEnd":true,"CycleId":688732,"SerialNumber":"0","DataMissing":true}';
-var GetLastCycleWithSerialNumberJSON4 = '{"Begin":"2013-09-03T13:51:40.000Z","End":"2013-09-03T08:54:36.000Z","EstimatedBegin":false,"EstimatedEnd":true,"CycleId":351262,"SerialNumber":"-1","DataMissing":true}';
+// Mock for `GetLastCycleWithSerialNumberV2/<machineId>` — last completed
+// cycle. The machine id sits at the path end (no query param).
 
-var invalidMachineResponse = {
-  'ErrorMessage': 'Invalid machine',
-  'Status': 'WrongRequestParameter'
-};
+require('./_helpers');
 
-$.mockjax({
-  url: 'http://localhost:8082/GetLastCycleWithSerialNumberV2/18',
-  responseTime: 1000,
-  responseText: GetLastCycleWithSerialNumberJSON1
-});
-
-$.mockjax({
-  url: 'http://localhost:8082/GetLastCycleWithSerialNumberV2/19',
-  responseTime: 1000,
-  responseText: GetLastCycleWithSerialNumberJSON3
-});
-
-$.mockjax({
-  url: 'http://localhost:8082/GetLastCycleWithSerialNumberV2/20',
-  responseTime: 1000,
-  responseText: invalidMachineResponse,
-  status: 200
-});
-
-$.mockjax({
-  url: 'http://localhost:8082/GetLastCycleWithSerialNumberV2/21',
-  responseTime: 1000,
-  responseText: GetLastCycleWithSerialNumberJSON2
-});
-
-$.mockjax({
-  url: 'http://localhost:8082/GetLastCycleWithSerialNumberV2/22',
-  responseTime: 1000,
-  responseText: GetLastCycleWithSerialNumberJSON4
-});
-
-$.mockjax({
-  url: 'http://localhost:8082/GetLastCycleWithSerialNumberV2/23',
-  isTimeout: true,
-  responseTime: 1000
-});
+MOCK.respond('GetLastCycleWithSerialNumberV2', {
+  byMachineId: {
+    1: {
+      Begin: '{{now-15m}}', End: '{{now-2m}}',
+      EstimatedBegin: false, EstimatedEnd: false,
+      CycleId: 600001, SerialNumber: 'SN-1-0013', DataMissing: false
+    },
+    2: {
+      Begin: '{{now-12m}}', End: '{{now-1m}}',
+      EstimatedBegin: false, EstimatedEnd: false,
+      CycleId: 600002, SerialNumber: 'SN-2-0026', DataMissing: false
+    },
+    3: {
+      Begin: '{{now-20m}}', End: '{{now-3m}}',
+      EstimatedBegin: false, EstimatedEnd: false,
+      CycleId: 600003, SerialNumber: 'SN-3-0039', DataMissing: false
+    }
+  },
+  default: { DataMissing: true }
+}, { delay: 300 });

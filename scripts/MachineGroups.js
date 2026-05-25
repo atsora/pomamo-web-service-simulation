@@ -2,11 +2,113 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-var GetGroupsWithMachineList =
-  { "GroupCategories": [{ "Display": "All machines", "SortPriority": 1, "OmitGroupCategory": true, "Groups": [{ "Id": "ALL", "Display": "All machines", "TreeName": "All machines", "SingleMachine": false, "Dynamic": false, "SortPriority": 0, "SortKind": 1, "SortKindTip": "minor" }] }, { "Display": "Production (all)", "SortPriority": 5, "OmitGroupCategory": true, "Groups": [{ "Id": "PRODALL", "Display": "Production (all)", "TreeName": "Production (all)", "SingleMachine": false, "Dynamic": false, "SortPriority": 10, "SortKind": 1, "SortKindTip": "minor", "Zoom": [{ "Id": "T", "Display": "Task machines", "TreeName": "Task machines", "SingleMachine": false, "Dynamic": false, "SortPriority": 20.1, "SortKind": 1, "SortKindTip": "minor", "Zoom": [{ "Id": "51", "Display": "51: T1: Tasks 1", "TreeName": "51: T1: Tasks 1", "SingleMachine": true, "MachineId": 51, "Dynamic": false, "SortPriority": 18, "SortKind": 1, "SortKindTip": "minor" }, { "Id": "52", "Display": "52: T2: Tasks 2", "TreeName": "52: T2: Tasks 2", "SingleMachine": true, "MachineId": 52, "Dynamic": false, "SortPriority": 19, "SortKind": 1, "SortKindTip": "minor" }] }, { "Id": "A", "Display": "Cell A", "TreeName": "Cell A", "SingleMachine": false, "Dynamic": false, "SortPriority": 20.2, "SortKind": 1, "SortKindTip": "minor", "Zoom": [{ "Id": "A1", "Display": "Cell A1", "TreeName": "Cell A1", "SingleMachine": false, "Dynamic": false, "SortPriority": 100.1, "SortKind": 1, "SortKindTip": "minor" }, { "Id": "A2", "Display": "Cell A2", "TreeName": "Cell A2", "SingleMachine": false, "Dynamic": false, "SortPriority": 100.2, "SortKind": 1, "SortKindTip": "minor" }] }] }] }, { "Display": "Random", "SortPriority": 10, "OmitGroupCategory": false, "Groups": [{ "Id": "Random", "Display": "Random", "TreeName": "Random", "SingleMachine": false, "Dynamic": true, "SortPriority": 0, "SortKind": 1, "SortKindTip": "minor" }] }, { "Display": "Department", "SortPriority": 10.1, "OmitGroupCategory": false, "Groups": [{ "Id": "D7", "Display": "Tasks", "TreeName": "Tasks", "SingleMachine": false, "Dynamic": false, "SortPriority": 1, "SortKind": 1, "SortKindTip": "minor", "Zoom": [] }, { "Id": "D2", "Display": "Dept 2", "TreeName": "Dept 2", "SingleMachine": false, "Dynamic": false, "SortPriority": 3, "SortKind": 1, "SortKindTip": "minor", "Zoom": [] }, { "Id": "D1", "Display": "Dept 1", "TreeName": "Dept 1", "SingleMachine": false, "Dynamic": false, "SortPriority": 4, "SortKind": 1, "SortKindTip": "minor", "Zoom": [{ "Id": "Ce1", "Display": "Cell A", "TreeName": "Cell A", "SingleMachine": false, "Dynamic": false, "SortPriority": 0, "SortKind": 1, "SortKindTip": "minor" }, { "Id": "Ce2", "Display": "Cell B", "TreeName": "Cell B", "SingleMachine": false, "Dynamic": false, "SortPriority": 0, "SortKind": 1, "SortKindTip": "minor" }] }, { "Id": "D6", "Display": "LineA", "TreeName": "LineA", "SingleMachine": false, "Dynamic": false, "SortPriority": 7, "SortKind": 1, "SortKindTip": "minor", "Zoom": [{ "Id": "Ce3", "Display": "LineA", "TreeName": "LineA", "SingleMachine": false, "Dynamic": false, "SortPriority": 0, "SortKind": 1, "SortKindTip": "minor" }] }] }, { "Display": "Single machines", "SortPriority": 11, "OmitGroupCategory": false, "Groups": [{ "Id": "18", "Display": "18: Simul1", "TreeName": "18: Simul1", "SingleMachine": true, "MachineId": 18, "Dynamic": false, "SortPriority": 1, "SortKind": 1, "SortKindTip": "minor" }, { "Id": "69", "Display": "69: Simul2", "TreeName": "69: Simul2", "SingleMachine": true, "MachineId": 69, "Dynamic": false, "SortPriority": 2, "SortKind": 1, "SortKindTip": "minor" }, { "Id": "76", "Display": "76: Simul3", "TreeName": "76: Simul3", "SingleMachine": true, "MachineId": 76, "Dynamic": false, "SortPriority": 3, "SortKind": 1, "SortKindTip": "minor" }, { "Id": "54", "Display": "54: SimulToolLife", "TreeName": "54: SimulToolLife", "SingleMachine": true, "MachineId": 54, "Dynamic": false, "SortPriority": 4, "SortKind": 1, "SortKindTip": "minor" }, { "Id": "63", "Display": "63: SimulToolLifeByCycle", "TreeName": "63: SimulToolLifeByCycle", "SingleMachine": true, "MachineId": 63, "Dynamic": false, "SortPriority": 5, "SortKind": 1, "SortKindTip": "minor" }, { "Id": "22", "Display": "22: ACMEWC110", "TreeName": "22: ACMEWC110", "SingleMachine": true, "MachineId": 22, "Dynamic": false, "SortPriority": 6, "SortKind": 1, "SortKindTip": "minor" }, { "Id": "27", "Display": "27: ACMEWC110-2", "TreeName": "27: ACMEWC110-2", "SingleMachine": true, "MachineId": 27, "Dynamic": false, "SortPriority": 7, "SortKind": 1, "SortKindTip": "minor" }, { "Id": "24", "Display": "24: BettcherBox", "TreeName": "24: BettcherBox", "SingleMachine": true, "MachineId": 24, "Dynamic": false, "SortPriority": 8, "SortKind": 1, "SortKindTip": "minor" }, { "Id": "25", "Display": "25: CovertFanuc1", "TreeName": "25: CovertFanuc1", "SingleMachine": true, "MachineId": 25, "Dynamic": false, "SortPriority": 9, "SortKind": 1, "SortKindTip": "minor" }, { "Id": "23", "Display": "23: FemaNakamura", "TreeName": "23: FemaNakamura", "SingleMachine": true, "MachineId": 23, "Dynamic": false, "SortPriority": 10, "SortKind": 1, "SortKindTip": "minor" }, { "Id": "26", "Display": "26: RemmeleFidia", "TreeName": "26: RemmeleFidia", "SingleMachine": true, "MachineId": 26, "Dynamic": false, "SortPriority": 11, "SortKind": 1, "SortKindTip": "minor" }, { "Id": "57", "Display": "57: Heidenhain530_DNC", "TreeName": "57: Heidenhain530_DNC", "SingleMachine": true, "MachineId": 57, "Dynamic": false, "SortPriority": 12, "SortKind": 1, "SortKindTip": "minor" }, { "Id": "3", "Display": "3: Heidenhain530_Lsv2", "TreeName": "3: Heidenhain530_Lsv2", "SingleMachine": true, "MachineId": 3, "Dynamic": false, "SortPriority": 13, "SortKind": 1, "SortKindTip": "minor" }, { "Id": "13", "Display": "13: LocalSiemens", "TreeName": "13: LocalSiemens", "SingleMachine": true, "MachineId": 13, "Dynamic": false, "SortPriority": 14, "SortKind": 1, "SortKindTip": "minor" }, { "Id": "11", "Display": "11: MTConnect", "TreeName": "11: MTConnect", "SingleMachine": true, "MachineId": 11, "Dynamic": false, "SortPriority": 15, "SortKind": 1, "SortKindTip": "minor" }, { "Id": "20", "Display": "20: MTConnect2", "TreeName": "20: MTConnect2", "SingleMachine": true, "MachineId": 20, "Dynamic": false, "SortPriority": 16, "SortKind": 1, "SortKindTip": "minor" }, { "Id": "51", "Display": "51: T1: Tasks 1", "TreeName": "51: T1: Tasks 1", "SingleMachine": true, "MachineId": 51, "Dynamic": false, "SortPriority": 18, "SortKind": 1, "SortKindTip": "minor" }, { "Id": "52", "Display": "52: T2: Tasks 2", "TreeName": "52: T2: Tasks 2", "SingleMachine": true, "MachineId": 52, "Dynamic": false, "SortPriority": 19, "SortKind": 1, "SortKindTip": "minor" }, { "Id": "47", "Display": "47: A1-1: A1-Machine1", "TreeName": "47: A1-1: A1-Machine1", "SingleMachine": true, "MachineId": 47, "Dynamic": false, "SortPriority": 20, "SortKind": 1, "SortKindTip": "minor" }, { "Id": "48", "Display": "48: A1-2: A1-Machine2", "TreeName": "48: A1-2: A1-Machine2", "SingleMachine": true, "MachineId": 48, "Dynamic": false, "SortPriority": 21, "SortKind": 1, "SortKindTip": "minor" }, { "Id": "49", "Display": "49: A2-1: A2-Machine1", "TreeName": "49: A2-1: A2-Machine1", "SingleMachine": true, "MachineId": 49, "Dynamic": false, "SortPriority": 22, "SortKind": 1, "SortKindTip": "minor" }, { "Id": "50", "Display": "50: A2-2: A2-Machine2ExtraSuperLongName", "TreeName": "50: A2-2: A2-Machine2ExtraSuperLongName", "SingleMachine": true, "MachineId": 50, "Dynamic": false, "SortPriority": 23, "SortKind": 1, "SortKindTip": "minor" }] }, { "Display": "Expiring tools", "SortPriority": 20, "OmitGroupCategory": false, "Groups": [{ "Id": "ET", "Display": "Expiring tools", "TreeName": "Expiring tools", "SingleMachine": false, "Dynamic": true, "SortPriority": 0, "SortKind": 1, "SortKindTip": "minor" }] }, { "Display": "Focused alarms", "SortPriority": 20, "OmitGroupCategory": false, "Groups": [{ "Id": "FA", "Display": "Focused alarms", "TreeName": "Focused alarms", "SingleMachine": false, "Dynamic": true, "SortPriority": 0, "SortKind": 1, "SortKindTip": "minor" }] }] };
+// Mock for `Machine/Groups` — the boot fetch that populates the group tree
+// inside x-machineselection. Built from the shared scenario.
 
-$.mockjax({
-  url: /^http:\/\/localhost:8082\/Machine\/Groups\?.*$/,
-  responseTime: 2000,
-  responseText: GetGroupsWithMachineList
-});
+require('./_helpers');
+require('./scenario');
+
+(function () {
+  function singleMachineGroup (m, sortPriority) {
+    return {
+      Id: String(m.id),
+      Display: m.id + ': ' + m.name,
+      TreeName: m.id + ': ' + m.name,
+      SingleMachine: true,
+      MachineId: m.id,
+      Dynamic: false,
+      SortPriority: sortPriority,
+      SortKind: 1,
+      SortKindTip: 'minor'
+    };
+  }
+
+  function cellGroup (id, display, sortPriority) {
+    return {
+      Id: id,
+      Display: display,
+      TreeName: display,
+      SingleMachine: false,
+      Dynamic: false,
+      SortPriority: sortPriority,
+      SortKind: 1,
+      SortKindTip: 'minor'
+    };
+  }
+
+  var singles = SCENARIO.MACHINES.map(function (m, idx) {
+    return singleMachineGroup(m, idx + 1);
+  });
+
+  var response = {
+    GroupCategories: [
+      {
+        Display: 'All machines',
+        SortPriority: 1,
+        OmitGroupCategory: true,
+        Groups: [
+          {
+            Id: String(SCENARIO.MAIN_GROUP),
+            Display: 'All machines',
+            TreeName: 'All machines',
+            SingleMachine: false,
+            Dynamic: false,
+            SortPriority: 0,
+            SortKind: 1,
+            SortKindTip: 'minor'
+          }
+        ]
+      },
+      {
+        Display: 'Cells',
+        SortPriority: 5,
+        OmitGroupCategory: false,
+        Groups: [
+          Object.assign(cellGroup(String(SCENARIO.MILL_GROUP), 'Milling cell', 1), {
+            Zoom: [singles[0], singles[1]]
+          }),
+          Object.assign(cellGroup(String(SCENARIO.LATHE_GROUP), 'Lathe cell', 2), {
+            Zoom: [singles[2]]
+          })
+        ]
+      },
+      {
+        Display: 'Single machines',
+        SortPriority: 11,
+        OmitGroupCategory: false,
+        Groups: singles
+      },
+      {
+        Display: 'Dynamic samples',
+        SortPriority: 20,
+        OmitGroupCategory: false,
+        Groups: [
+          {
+            Id: 'Random',
+            Display: 'Random (refreshes)',
+            TreeName: 'Random (refreshes)',
+            SingleMachine: false,
+            Dynamic: true,
+            SortPriority: 0,
+            SortKind: 1,
+            SortKindTip: 'minor'
+          }
+        ]
+      }
+    ]
+  };
+
+  // x-machineselection consumes both GroupCategories (the tree) and MachineList
+  // (the flat fallback used by the machines search tab and by _storeDisplays
+  // to back-fill any single-machine groups missing from the tree).
+  response.MachineList = SCENARIO.MACHINES.map(function (m, idx) {
+    return {
+      Id: m.id,
+      Display: m.id + ': ' + m.name,
+      MonitoredMachine: m.monitored,
+      DisplayPriority: idx + 1
+    };
+  });
+
+  MOCK.respond('Machine/Groups', function () { return response; }, { delay: 400 });
+})();

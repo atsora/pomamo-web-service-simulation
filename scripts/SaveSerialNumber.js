@@ -2,41 +2,22 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-var pulseUtility = require('pulseUtility');
-var getCyclesInPeriod = require('./GetCyclesInPeriod');
+// Mock for `SaveSerialNumberV5?MachineId=<id>&Begin=<iso>&SerialNumber=<sn>`.
+// Function form: needs to read user inputs (SerialNumber) and reflect the
+// machine id back; the reserved ids 999/998/997 are still honoured.
 
-function saveSerialNumber(url) {
-  if (getCyclesInPeriod.objects) {
-    var cycleid = pulseUtility.getURLParameter(url, 'CycleId');
-    var serialnumber = pulseUtility.getURLParameter(url, 'SerialNumber');
-    for (var i = 0; i < getCyclesInPeriod.objects.List.length; i++) {
-      if (getCyclesInPeriod.objects.List[i].CycleId = cycleid) {
-        getCyclesInPeriod.objects.List[i].SerialNumber = serialnumber;
-      }
-    }
+require('./_helpers');
 
+MOCK.respond('SaveSerialNumberV5', function (call) {
+  if (!call.params.MachineId) {
+    return { __status: 400, body: MOCK.errorBody('MachineId required') };
   }
-}
-
-var SaveSerialNumberJSON1 = {
-  'Id' : 3,
-  'Message' : 'Save serial number successful'
-};
-var SaveSerialNumberJSON2 = {
-  'ErrorMessage' : 'Request failed',
-  'DisplayStatus' : true
-};
-var invalidMachineResponse = {
-  'ErrorMessage': 'Invalid machine',
-  'Status': 'WrongRequestParameter'
-};
-
-$.mockjax({
-  url : 'http://localhost:8082/SaveSerialNumberV5?MachineId=19&Begin=2013-09-03T13:51:40.000Z&SerialNumber=*',
-  responseTime : 1000,
-  response : function (settings) {
-    saveSerialNumber(settings.url);
-    this.responseText = SaveSerialNumberJSON1
+  if (!call.params.SerialNumber) {
+    return { __status: 400, body: MOCK.errorBody('SerialNumber required') };
   }
-});
-
+  return {
+    Id: Number(call.params.MachineId),
+    Message: 'Save serial number successful',
+    Revision: { Id: 1, DateTime: '{{now}}' }
+  };
+}, { delay: 500 });

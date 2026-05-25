@@ -2,71 +2,52 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-var GroupZoomInJSON4 = {
-  'Dynamic': false,
-  'Children': ['3', '18', '19', '20'],
-  'ChildrenDetails': [
-    { 'SingleMachine': true },
-    { 'SingleMachine': true },
-    { 'SingleMachine': true },
-    { 'SingleMachine': true }]
-};
-var GroupZoomInJSON17 = {
-  'Dynamic': false,
-  'Children': ['3', '18', '19', '20', '21', '22', 'grp', 'anc1', 'anc2', 'anc3', 'anc4', '4', '17', '218', '219', '220', '221'],
-  'ChildrenDetails': [
-    { 'SingleMachine': true },
-    { 'SingleMachine': true },
-    { 'SingleMachine': true },
-    { 'SingleMachine': true },
-    { 'SingleMachine': true },
-    { 'SingleMachine': true },
-    { 'SingleMachine': false },
-    { 'SingleMachine': false },
-    { 'SingleMachine': false },
-    { 'SingleMachine': false },
-    { 'SingleMachine': false },
-    { 'SingleMachine': true },
-    { 'SingleMachine': true },
-    { 'SingleMachine': true },
-    { 'SingleMachine': true },
-    { 'SingleMachine': true },
-    { 'SingleMachine': true }]
-};
+require('./_helpers');
+require('./scenario');
 
-var invalidMachineResponse = {
-  'ErrorMessage': 'Invalid machine or group',
-  'Status': 'WrongRequestParameter'
-};
+(function () {
+  // Numeric scenario groups → real machine children
+  var MAP = {};
+  MAP[SCENARIO.MAIN_GROUP]  = { children: ['1','2','3','4'], single: [true,true,true,true] };
+  MAP[SCENARIO.MILL_GROUP]  = { children: ['1','2'], single: [true,true] };
+  MAP[SCENARIO.LATHE_GROUP] = { children: ['3'], single: [true] };
 
-//'http://localhost:8082/GroupZoomIn?GroupId=4&Details=true',
-$.mockjax({
-  url: /^http:\/\/localhost:8082\/Machine\/GroupZoomIn\?GroupId=G4.*$/,
-  responseTime: 500,
-  responseText: GroupZoomInJSON4
-});
+  // Synthetic "G<n>" groups for the x-groupsingroup demo: n children whose
+  // first slots are the scenario machines (so the boxtoclone template renders
+  // real x-machinedisplay tiles) and the rest are nested non-machine sub-groups.
+  function syntheticGroup (size) {
+    var children = [];
+    var single = [];
+    var machines = SCENARIO.MACHINES;
+    for (var i = 0; i < size; i++) {
+      if (i < machines.length) {
+        children.push(String(machines[i].id));
+        single.push(true);
+      } else {
+        children.push('G' + size + '.' + (i + 1));
+        single.push(false);
+      }
+    }
+    return { children: children, single: single };
+  }
 
-$.mockjax({
-  url: /^http:\/\/localhost:8082\/Machine\/GroupZoomIn\?GroupId=G17.*$/,
-  responseTime: 500,
-  responseText: GroupZoomInJSON17
-});
-
-/*$.mockjax({
-  url : 'http://localhost:8082/Machine/GroupZoomIn?GroupId=G19&Details=true',
-  responseTime : 500,
-  responseText : GroupZoomInJSON19
-});*/
-
-$.mockjax({
-  url: /^http:\/\/localhost:8082\/Machine\/GroupZoomIn\?GroupId=G128.*$/,
-  responseTime: 1000,
-  responseText: invalidMachineResponse,
-  status: 200
-});
-
-$.mockjax({
-  url: /^http:\/\/localhost:8082\/Machine\/GroupZoomIn\?GroupId=G129.*$/,
-  status: 504,
-  responseTime: 1000
-});
+  MOCK.respond('Machine/GroupZoomIn', function (call) {
+    if (!call.params.GroupId) {
+      return { __status: 400, body: MOCK.errorBody('GroupId required') };
+    }
+    var gidRaw = String(call.params.GroupId);
+    var info;
+    var n = Number(gidRaw);
+    if (!isNaN(n) && MAP[n]) {
+      info = MAP[n];
+    } else {
+      var m = /^G(\d+)(?:\.\d+)?$/i.exec(gidRaw);
+      info = m ? syntheticGroup(Number(m[1])) : { children: [], single: [] };
+    }
+    return {
+      Dynamic: false,
+      Children: info.children,
+      ChildrenDetails: info.single.map(function (b) { return { SingleMachine: b }; })
+    };
+  }, { delay: 300 });
+})();

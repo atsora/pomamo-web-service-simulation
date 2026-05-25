@@ -2,23 +2,11 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-var MilestonesRemoveJSON_success = {
-  'Message': 'Ok' // or 'Remove milestones successful'
-};
-var removeFailedResponse = {
-  'ErrorMessage': 'Remove failed',
-  'Status': 'UnexpectedError'
-};
+require('./_helpers');
 
-$.mockjax({
-  url: 'http://localhost:8082/MilestonesRemove?Id=1',
-  responseTime: 800,
-  responseText: MilestonesRemoveJSON_success
-});
-
-$.mockjax({  
-  url: /^http:\/\/localhost:8082\/MilestonesRemove\?Id=[2-9].*$/,
-  responseTime: 500,
-  responseText: removeFailedResponse,
-  status: 200
-});
+MOCK.respond('MilestonesRemove', function (call) {
+  if (!call.params.Id) {
+    return { __status: 400, body: MOCK.errorBody('Id required') };
+  }
+  return { Message: 'Ok' };
+}, { delay: 400 });

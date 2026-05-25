@@ -2,252 +2,65 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-var reasonOnlySlotsResponse3 = {
-  'ReasonOnlySlots': [{
-    'Description': 'A description of this reason',
-    'OverwriteRequired': false,
-    'Running': false,
-    'DefaultReason': true,
-    'MachineModes': [{
-      'Category': {
-        Id: 1
-      },
-      'Id': 67,
-      'Display': 'No motion in Auto mode',
-      'Range': '[2017-01-16T11:35:43Z,2017-01-16T11:37:15Z)',
-      'FgColor': '#000000',
-      'BgColor': '#FFFF00'
+// Mock for `ReasonOnlySlots?MachineId=<id>&Range=<range>` — reason slots
+// with the embedded MachineModes structure consumed by x-reasonslotbar.
+
+require('./_helpers');
+
+// A single slot block keyed by reason; used as a building block in the JSON
+// arrays below to keep them readable.
+function slot (range, p) {
+  return {
+    Range: range,
+    Id: p.Id, Display: p.Display, Running: p.Running,
+    OverwriteRequired: p.OverwriteRequired, DefaultReason: p.DefaultReason,
+    BgColor: p.BgColor, FgColor: p.FgColor,
+    MachineModes: [{
+      Category: { Id: p.Running ? 2 : 1 },
+      Id: p.Id, Display: p.Display, Range: range,
+      BgColor: p.BgColor, FgColor: p.FgColor
     }],
-    'Id': 3,
-    'Display': 'Short idle time',
-    'Range': '[2017-01-16T11:35:43Z,2017-01-16T11:37:15Z)',
-    'FgColor': '#000000',
-    'BgColor': '#FFA500'
-  }],
-  'Range': '[2017-01-16T11:36:25Z,2017-01-16T11:36:25Z]',
-  'RangeNumber': 1
-};
-// For x-reasonslotlist
-/* we should add :
-'Range':'[2017-01-16T00:00:00.000Z,2017-01-16T12:00:00.000Z)',
-'Blocks':[{'Range':'[2017-01-16T00:00:00.000Z,2017-01-16T00:40:00.000Z)','Color':'#FFFF00','Details':[{'Color':'#FFFF00','OverwriteRequired':true,'Duration':1200}] },
+    Description: ''
+  };
+}
 
-  {'Range':'[2017-01-16T04:00:00.000Z,2017-01-16T04:40:00.000Z)','Color':'#008000','Details':[{'Color':'#008000','OverwriteRequired':false,'Duration':1200}] }, // =Motion
+var MOTION       = { Id: 2, Display: 'Motion',         Running: true,  OverwriteRequired: false, DefaultReason: true,  BgColor: '#2E7D32', FgColor: '#FFFFFF' };
+var SHORT_IDLE   = { Id: 1, Display: 'Short idle',     Running: false, OverwriteRequired: false, DefaultReason: true,  BgColor: '#FFC107', FgColor: '#000000' };
+var OPERATOR     = { Id: 3, Display: 'Operator break', Running: false, OverwriteRequired: false, DefaultReason: false, BgColor: '#FB8C00', FgColor: '#000000' };
+var AWAITING     = { Id: 4, Display: 'Awaiting part',  Running: false, OverwriteRequired: true,  DefaultReason: false, BgColor: '#D32F2F', FgColor: '#FFFFFF' };
 
-  {'Range':'[2017-01-16T08:00:00.000Z,2017-01-16T08:40:00.000Z)','Color':'#FFFF00','Details':[{'Color':'#FFFF00','OverwriteRequired':true,'Duration':1200}] },
-
-  {'Range':'[2017-01-16T09:00:00.000Z,2017-01-16T09:40:00.000Z)','Color':'#008000','Details':[{'Color':'#008000','OverwriteRequired':false,'Duration':1200}] },// =Motion
-  
-  {'Range':'[2017-01-16T10:00:00.000Z,2017-01-16T11:20:00.000Z)','Color':'#FFFF00','Details':[{'Color':'#FFFF00','OverwriteRequired':false,'Duration':1200}] }]
-*/
-var reasonOnlySlotsResponse18 = {
-  'ReasonOnlySlots': [
-    {
-      'Description': 'A description of this reason 1 - OR',
-      'OverwriteRequired': true,
-      'Running': false,
-      'DefaultReason': true,
-      'MachineModes': [{
-        'Category': {
-          Id: 1
-        },
-        'Id': 67,
-        'Display': 'Mode1',
-        'Range': '[2017-01-16T00:00:00.000Z,2017-01-16T00:40:00.000Z)',
-        'FgColor': '#000000',
-        'BgColor': '#FFFF00'
-      }],
-      'Id': 3,
-      'Display': 'Reason1 - O.R.',
-      'Range': '[2017-01-16T00:00:00.000Z,2017-01-16T00:40:00.000Z)',
-      'FgColor': '#000000',
-      'BgColor': '#FFFF00'
-    },
-    {
-      'Description': 'A description of this reason - motion',
-      'OverwriteRequired': false,
-      'Running': true,
-      'DefaultReason': true,
-      'MachineModes': [{
-        'Category': {
-          Id: 2
-        },
-        'Id': 67,
-        'Display': 'Motion mode',
-        'Range': '[2017-01-16T04:00:00.000Z,2017-01-16T04:40:00.000Z)',
-        'FgColor': '#000000',
-        'BgColor': '#008000'
-      }],
-      'Id': 3,
-      'Display': 'Motion Reason',
-      'Range': '[2017-01-16T04:00:00.000Z,2017-01-16T04:40:00.000Z)',
-      'FgColor': '#000000',
-      'BgColor': '#008000'
-    },
-    {
-      'Description': 'A description of this reason 2 - OR',
-      'OverwriteRequired': true,
-      'Running': false,
-      'DefaultReason': true,
-      'MachineModes': [{
-        'Category': {
-          Id: 1
-        },
-        'Id': 67,
-        'Display': 'No motion in Auto mode',
-        'Range': '[2017-01-16T08:00:00.000Z,2017-01-16T08:40:00.000Z)',
-        'FgColor': '#000000',
-        'BgColor': '#FFFF00'
-      }],
-      'Id': 3,
-      'Display': 'Reason 2 - O.R.',
-      'Range': '[2017-01-16T08:00:00.000Z,2017-01-16T08:40:00.000Z)',
-      'FgColor': '#000000',
-      'BgColor': '#FFFF00'
-    },
-    {
-      'Description': 'A description of this reason - Motion',
-      'OverwriteRequired': false,
-      'Running': true,
-      'DefaultReason': true,
-      'MachineModes': [{
-        'Category': {
-          Id: 2
-        },
-        'Id': 67,
-        'Display': 'Motion Mode',
-        'Range': '[2017-01-16T09:00:00.000Z,2017-01-16T09:40:00.000Z)',
-        'FgColor': '#000000',
-        'BgColor': '#008000'
-      }],
-      'Id': 3,
-      'Display': 'Motion reason',
-      'Range': '[2017-01-16T09:00:00.000Z,2017-01-16T09:40:00.000Z)',
-      'FgColor': '#000000',
-      'BgColor': '#008000'
-    },
-    {
-      'Description': 'A description of this reason 3',
-      'OverwriteRequired': false,
-      'Running': false,
-      'DefaultReason': true,
-      'MachineModes': [{
-        'Category': {
-          Id: 1
-        },
-        'Id': 67,
-        'Display': 'No motion in Auto mode',
-        'Range': '[2017-01-16T10:00:00.000Z,2017-01-16T11:20:00.000Z)',
-        'FgColor': '#000000',
-        'BgColor': '#FFFF00'
-      }],
-      'Id': 3,
-      'Display': 'Reason 3',
-      'Range': '[2017-01-16T10:00:00.000Z,2017-01-16T11:20:00.000Z)',
-      'FgColor': '#000000',
-      'BgColor': '#FFFF00'
-    },
-    {
-      'Description': 'A description of this reason -short',
-      'OverwriteRequired': false,
-      'Running': false,
-      'DefaultReason': true,
-      'MachineModes': [{
-        'Category': {
-          Id: 1
-        },
-        'Id': 67,
-        'Display': 'No motion in Auto mode',
-        'Range': '[2017-01-16T11:35:43Z,2017-01-16T11:47:15Z)',
-        'FgColor': '#000000',
-        'BgColor': '#FFFF00'
-      }],
-      'Id': 3,
-      'Display': 'Short idle time',
-      'Range': '[2017-01-16T11:35:43Z,2017-01-16T11:47:15Z)',
-      'FgColor': '#000000',
-      'BgColor': '#FFA500'
-    }
-  ],
-  'Range': '[2017-01-16T00:00:00.000Z,2017-01-16T12:00:00.000Z]',
-  'RangeNumber': 1
-};
-var reasonOnlySlotsResponse19 = {
-  'ReasonOnlySlots': [{
-    'Description': 'A description of this reason',
-    'OverwriteRequired': false,
-    'Running': false,
-    'DefaultReason': true,
-    'MachineModes': [{
-      'Category': {
-        Id: 1
-      },
-      'Id': 67,
-      'Display': 'No motion in Auto mode',
-      'Range': '[2017-01-16T11:35:43Z,2017-01-16T11:37:15Z)',
-      'FgColor': '#000000',
-      'BgColor': '#FFFF00'
-    }],
-    'Id': 3,
-    'Display': 'Short idle time',
-    'Range': '[2017-01-16T11:35:43Z,2017-01-16T11:37:15Z)',
-    'FgColor': '#000000',
-    'BgColor': '#FFA500'
-  }],
-  'Range': '[2017-01-16T11:36:25Z,2017-01-16T11:36:25Z]',
-  'RangeNumber': 1
-};
-var reasonOnlySlotsResponse22 = {
-  'ReasonOnlySlots': [{
-    'Description': 'A description of this reason',
-    'OverwriteRequired': false,
-    'Running': false,
-    'DefaultReason': true,
-    'MachineModes': [{
-      'Category': {
-        Id: 1
-      },
-      'Id': 67,
-      'Display': 'No motion in Auto mode',
-      'Range': '[2017-01-16T11:35:43Z,2017-01-16T11:37:15Z)',
-      'FgColor': '#000000',
-      'BgColor': '#FFFF00'
-    }],
-    'Id': 3,
-    'Display': 'Short idle time',
-    'Range': '[2017-01-16T11:35:43Z,2017-01-16T11:37:15Z)',
-    'FgColor': '#000000',
-    'BgColor': '#FFA500'
-  }],
-  'Range': '[2017-01-16T11:36:25Z,2017-01-16T11:36:25Z]',
-  'RangeNumber': 1
+var ReasonOnlySlotsJSON1 = {
+  ReasonOnlySlots: [
+    slot('{{now-8h..now-6h40m}}',   MOTION),
+    slot('{{now-6h40m..now-5h20m}}', SHORT_IDLE),
+    slot('{{now-5h20m..now-4h}}',   MOTION),
+    slot('{{now-4h..now-2h40m}}',   AWAITING),
+    slot('{{now-2h40m..now-1h20m}}', MOTION),
+    slot('{{now-1h20m..now}}',      OPERATOR)
+  ]
 };
 
+var ReasonOnlySlotsJSON2 = {
+  ReasonOnlySlots: [
+    slot('{{now-8h..now-4h}}', MOTION),
+    slot('{{now-4h..now-3h}}', SHORT_IDLE),
+    slot('{{now-3h..now-1h}}', MOTION),
+    slot('{{now-1h..now}}',    OPERATOR)
+  ]
+};
 
-//detailedreasonat machine-id=3 when='2017-01-16T11:36:00Z
-//mode.Category.Id
-$.mockjax({
-  url: 'http://localhost:8082/ReasonOnlySlots?MachineId=3*',
-  responseTime: 500,
-  responseText: reasonOnlySlotsResponse3
-});
-// /^http:\/\/localhost:8082\/ReasonOnlySlots\?MachineId=3\&.*/,
-/* For x-reasonslotlist + save reason */
-$.mockjax({
-  url: /^http:\/\/localhost:8082\/ReasonOnlySlots\?MachineId=18&.*$/,
-  responseTime: 500,
-  responseText: reasonOnlySlotsResponse18
-});
+var ReasonOnlySlotsJSON3 = {
+  ReasonOnlySlots: [
+    slot('{{now-8h..now-1h}}', MOTION),
+    slot('{{now-1h..now}}',    AWAITING)
+  ]
+};
 
-$.mockjax({
-  url: /^http:\/\/localhost:8082\/ReasonOnlySlots\?MachineId=19.*$/,
-  responseTime: 1000,
-  responseText: reasonOnlySlotsResponse19
-});
-
-// Save Reason
-$.mockjax({
-  url: /^http:\/\/localhost:8082\/ReasonOnlySlots\?MachineId=22.*$/,
-  responseTime: 1000,
-  responseText: reasonOnlySlotsResponse22
-});
+MOCK.respond('ReasonOnlySlots', {
+  byMachineId: {
+    1: ReasonOnlySlotsJSON1,
+    2: ReasonOnlySlotsJSON2,
+    3: ReasonOnlySlotsJSON3
+  },
+  default: ReasonOnlySlotsJSON1
+}, { delay: 400 });

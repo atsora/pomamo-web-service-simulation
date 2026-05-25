@@ -2,19 +2,49 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-var cncValueAt = '{"ByMachineModule":[{"MachineModule":{"Id":3,"Display":"HeidenhainLsv2","Main":true},"ByField":[{"Field":{"Id":101,"Display":"Spindle speed (RPM)"},"Value":4000,"Color":"#2B60DE","PerformanceField":true},{"Field":{"Id":109,"Display":"Program name"},"Value":"LOOP.H","Color":"","PerformanceField":false},{"Field":{"Id":171,"Display":"Program status "},"Value":"Started","Color":"","PerformanceField":false},{"Field":{"Id":170,"Display":"Execution mode "},"Value":"Automatic","Color":"","PerformanceField":false},{"Field":{"Id":114,"Display":"CNC modes "},"Value":"Automatic - Started","Color":"","PerformanceField":false},{"Field":{"Id":104,"Display":"SpindleSpeed override (%)"},"Value":100,"Color":"","PerformanceField":false},{"Field":{"Id":103,"Display":"Feedrate override (%)"},"Value":100,"Color":"#00FF00","PerformanceField":false}]}],"At":"2017-01-16T08:54:26.620Z"}';
+// Mock for `CncValueAt?MachineId=<id>&At=<iso>` — CNC field readings at a
+// given instant.
 
-var cncValueBlinking = '{ "ByMachineModule": [{ "MachineModule": { "Id": 23, "Display": "OP5", "Main": true }, "ByField": [{ "Field": { "Id": 201, "Display": "Production counter " }, "Value": 11530, "Color": "", "PerformanceField": false }, { "Field": { "Id": 126, "Display": "Stack light " }, "Value": { "__type": "Lemoine.Web.CncValue.StackLightDTO, Lemoine.Web", "Lights": [{ "Color": "Red", "Status": "Off" }, { "Color": "Yellow", "Status": "Off" }, { "Color": "Green", "Status": "Flashing" }] }, "Color": "", "PerformanceField": false }] }], "At": "2019-09-10T07:30:01.630Z" }';
+require('./_helpers');
 
-$.mockjax({
-  url: 'http://localhost:8082/CncValueAt?MachineId=18*',
-  responseTime: 1000,
-  responseText: cncValueAt
-});
-
-// Blinking
-$.mockjax({
-  url: 'http://localhost:8082/CncValueAt?MachineId=46*',
-  responseTime: 1000,
-  responseText: cncValueBlinking
-});
+MOCK.respond('CncValueAt', {
+  byMachineId: {
+    1: {
+      At: '{{now}}',
+      ByMachineModule: [{
+        MachineModule: { Id: 1, Display: 'Module-1', Main: true },
+        ByField: [
+          { Field: { Id: 101, Display: 'Spindle speed (RPM)' },   Value: 2750, Color: '#2B60DE', PerformanceField: true  },
+          { Field: { Id: 109, Display: 'Program name' },          Value: 'PROG_1.NC', Color: '', PerformanceField: false },
+          { Field: { Id: 170, Display: 'Execution mode' },        Value: 'Automatic', Color: '', PerformanceField: false },
+          { Field: { Id: 103, Display: 'Feedrate override (%)' }, Value: 100, Color: '#2E7D32', PerformanceField: false }
+        ]
+      }]
+    },
+    2: {
+      At: '{{now}}',
+      ByMachineModule: [{
+        MachineModule: { Id: 2, Display: 'Module-2', Main: true },
+        ByField: [
+          { Field: { Id: 101, Display: 'Spindle speed (RPM)' },   Value: 3000, Color: '#2B60DE', PerformanceField: true  },
+          { Field: { Id: 109, Display: 'Program name' },          Value: 'PROG_2.NC', Color: '', PerformanceField: false },
+          { Field: { Id: 170, Display: 'Execution mode' },        Value: 'Manual',    Color: '#FFC107', PerformanceField: false },
+          { Field: { Id: 103, Display: 'Feedrate override (%)' }, Value: 80,          Color: '#FFC107', PerformanceField: false }
+        ]
+      }]
+    },
+    3: {
+      At: '{{now}}',
+      ByMachineModule: [{
+        MachineModule: { Id: 3, Display: 'Module-3', Main: true },
+        ByField: [
+          { Field: { Id: 101, Display: 'Spindle speed (RPM)' },   Value: 1200, Color: '#2B60DE', PerformanceField: true  },
+          { Field: { Id: 109, Display: 'Program name' },          Value: 'PROG_3.MPF', Color: '', PerformanceField: false },
+          { Field: { Id: 170, Display: 'Execution mode' },        Value: 'Automatic',  Color: '', PerformanceField: false },
+          { Field: { Id: 103, Display: 'Feedrate override (%)' }, Value: 100,          Color: '#2E7D32', PerformanceField: false }
+        ]
+      }]
+    }
+  },
+  default: { At: '{{now}}', ByMachineModule: [] }
+}, { delay: 400 });

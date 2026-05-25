@@ -2,63 +2,63 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-var RunningSlots_6h_18h = {
-  'Range':'[2014-05-05T06:00:00.000Z,2014-05-05T18:00:00.000Z)',
-  'Blocks':[
-    {'Range':'[2014-05-05T06:00:00.000Z,2014-05-05T08:00:00.000Z)' , 'Running':false, 'NotRunning':true}, 
-    {'Range':'[2014-05-05T08:00:00.000Z,2014-05-05T10:00:00.000Z)', 'Running':true, 'NotRunning':false},
-    {'Range':'[2014-05-05T10:00:00.000Z,2014-05-05T10:30:00.000Z)', 'Running':false, 'NotRunning':true},
-    {'Range':'[2014-05-05T10:30:00.000Z,2014-05-05T12:00:00.000Z)', 'Running':true, 'NotRunning':false},
-    {'Range':'[2014-05-05T12:00:00.000Z,2014-05-05T14:00:00.000Z)', 'Running':false, 'NotRunning':true},
-    {'Range':'[2014-05-05T14:00:00.000Z,2014-05-05T16:30:00.000Z)', 'Running':true, 'NotRunning':false},
-    {'Range':'[2014-05-05T16:30:00.000Z,2014-05-05T17:00:00.000Z)', 'Running':false, 'NotRunning':true},
-    {'Range':'[2014-05-05T17:00:00.000Z,2014-05-05T20:00:00.000Z)', 'Running':false, 'NotRunning':true}
-  ] };
+// Mock for `RunningSlots?MachineId=<id>&Range=<range>` — alternating
+// running/not-running slots over an 8-hour window.
 
-// ReasonCNCbar with operation
-var RunningSlots_op = {
-  'Range':'[2013-09-03T08:28:37.000Z,2013-09-03T08:54:36.000Z)',
-  'Blocks':[
-    {'Range':'[2013-09-03T08:28:37.000Z,2013-09-03T08:37:37.000Z)', 'Running':false, 'NotRunning':true },
-    {'Range':'[2013-09-03T08:37:37.000Z,2013-09-03T08:43:37.000Z)', 'Running':true, 'NotRunning':false },
-    {'Range':'[2013-09-03T08:43:37.000Z,2013-09-03T08:50:36.000Z)', 'Running':false, 'NotRunning':true },
-    {'Range':'[2013-09-03T08:50:36.000Z,2013-09-03T08:54:36.000Z)', 'Running':true, 'NotRunning':false },
-    {'Range':'[2013-09-03T08:54:36.000Z,2013-09-03T09:01:36.000Z)', 'Running':true, 'NotRunning':false }],
-  'MotionDuration':'7000',
-  'TotalDuration'  :'86400'};
+require('./_helpers');
 
-var RunningSlots_6h_18h_mach20_small_periods = {
-  'Range':'[2014-05-05T06:00:00.000Z,2014-05-05T18:00:00.000Z)',
-  'Blocks':[
-    {'Range':'[2014-05-05T06:00:00.000Z,2014-05-05T08:00:00.000Z)' , 'Running':false, 'NotRunning':true }, 
-    {'Range':'[2014-05-05T08:00:00.000Z,2014-05-05T10:00:00.000Z)', 'Running':true, 'NotRunning':false,'Duration':3000},
-    {'Range':'[2014-05-05T10:00:00.000Z,2014-05-05T10:30:00.000Z)', 'Running':false, 'NotRunning':true },
-    {'Range':'[2014-05-05T10:30:00.000Z,2014-05-05T12:00:00.000Z)', 'Running':true, 'NotRunning':false },
-    {'Range':'[2014-05-05T12:00:00.000Z,2014-05-05T14:00:00.000Z)', 'Running':false, 'NotRunning':true },
-    {'Range':'[2014-05-05T14:00:00.000Z,2014-05-05T16:30:00.000Z)', 'Running':true, 'NotRunning':false },
-    {'Range':'[2014-05-05T16:30:00.000Z,2014-05-05T17:00:00.000Z)', 'Running':false, 'NotRunning':true },
-    {'Range':'[2014-05-05T17:00:00.000Z,2014-05-05T20:00:00.000Z)', 'Running':false, 'NotRunning':true}] };
-  
-$.mockjax({
-  url : /^http:\/\/localhost:8082\/RunningSlots\?MachineId=18\&Range=\[2014-05-05T06:00:00.000Z,2014-05-05T18:00:00.000Z\)$/,
-  responseTime : 1000,
-  responseText : RunningSlots_6h_18h
-});
-$.mockjax({
-  url : /^http:\/\/localhost:8082\/RunningSlots\?MachineId=18\&Range=\[2014-05-05T06:00:00Z,2014-05-05T18:00:00Z\)$/,
-  responseTime : 1000,
-  responseText : RunningSlots_6h_18h
-});
-$.mockjax({
-  url : /^http:\/\/localhost:8082\/RunningSlots\?MachineId=18\&Range=\[2013-09-03T08:28:37.000Z,2013-09-03T08:54:36.000Z\)$/,
-  responseTime : 1000,
-  responseText : RunningSlots_op
-});
+// Machine 1: 4× running + 4× not-running alternating → 4h motion / 4h not.
+var RunningSlotsJSON1 = {
+  Range: '{{now-8h..now}}',
+  MotionDuration: 14400,
+  NotRunningDuration: 14400,
+  TotalDuration: 28800,
+  Blocks: [
+    { Range: '{{now-8h..now-7h}}', Running: false, NotRunning: true },
+    { Range: '{{now-7h..now-6h}}', Running: true,  NotRunning: false },
+    { Range: '{{now-6h..now-5h}}', Running: false, NotRunning: true },
+    { Range: '{{now-5h..now-4h}}', Running: true,  NotRunning: false },
+    { Range: '{{now-4h..now-3h}}', Running: false, NotRunning: true },
+    { Range: '{{now-3h..now-2h}}', Running: true,  NotRunning: false },
+    { Range: '{{now-2h..now-1h}}', Running: false, NotRunning: true },
+    { Range: '{{now-1h..now}}',    Running: true,  NotRunning: false }
+  ]
+};
 
-$.mockjax({
-  url : /^http:\/\/localhost:8082\/RunningSlots\?MachineId=20\&Range=\[2014-05-05T06:00:00.000Z,2014-05-05T18:00:00.000Z\)$/,
-  responseTime : 1000,
-  responseText : RunningSlots_6h_18h_mach20_small_periods
-});
+// Machine 2: 6h running / 2h not → 75% motion.
+var RunningSlotsJSON2 = {
+  Range: '{{now-8h..now}}',
+  MotionDuration: 21600,
+  NotRunningDuration: 7200,
+  TotalDuration: 28800,
+  Blocks: [
+    { Range: '{{now-8h..now-6h}}', Running: true,  NotRunning: false },
+    { Range: '{{now-6h..now-5h}}', Running: false, NotRunning: true },
+    { Range: '{{now-5h..now-2h}}', Running: true,  NotRunning: false },
+    { Range: '{{now-2h..now-1h}}', Running: false, NotRunning: true },
+    { Range: '{{now-1h..now}}',    Running: true,  NotRunning: false }
+  ]
+};
 
-/* DO NOT CREATE MachineId=19 Range='[2014-02-07T08:00:00.000Z)' end='2013-11-07T08:00:00.000Z => FAILED */
+// Machine 3: 5h running / 3h not → 62.5% motion.
+var RunningSlotsJSON3 = {
+  Range: '{{now-8h..now}}',
+  MotionDuration: 18000,
+  NotRunningDuration: 10800,
+  TotalDuration: 28800,
+  Blocks: [
+    { Range: '{{now-8h..now-7h}}', Running: false, NotRunning: true },
+    { Range: '{{now-7h..now-5h}}', Running: true,  NotRunning: false },
+    { Range: '{{now-5h..now-3h}}', Running: false, NotRunning: true },
+    { Range: '{{now-3h..now}}',    Running: true,  NotRunning: false }
+  ]
+};
+
+MOCK.respond('RunningSlots', {
+  byMachineId: {
+    1: RunningSlotsJSON1,
+    2: RunningSlotsJSON2,
+    3: RunningSlotsJSON3
+  },
+  default: RunningSlotsJSON1
+}, { delay: 400 });

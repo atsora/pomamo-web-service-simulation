@@ -2,49 +2,60 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-var ProductionTracker_8h_16h = {
-  'Range': '[2020-05-05T08:00:00.000Z,2020-05-05T16:00:00Z)',
-  'HourlyData': [
-    { 'Range': '[2020-05-05T08:00:00Z,2020-05-05T09:00:00Z)', 'Actual': 15, 'Target': 25, 'Static': true },
-    { 'Range': '[2020-05-05T09:00:00Z,2020-05-05T10:00:00Z)', 'Actual': 14.2, 'Target': 25, 'Static': true },
-    { 'Range': '[2020-05-05T10:00:00Z,2020-05-05T11:00:00Z)', 'Actual': 3, 'Target': 25, 'Static': false }
+// Mock for `ProductionTracker?GroupId=<id>&Range=<range>` — 8 hourly buckets
+// across the last 8 hours.
+//
+// The hourly LocalHour values use the sentinel form '{{now-Xh}}' so they're
+// always wall-clock-current. Pre-baked 8-hour series per group.
+
+require('./_helpers');
+
+// One hourly row builder used to keep the JSON below readable. The Range
+// covers [now-(N+1)h .. now-Nh).
+function hour (N, actual, target) {
+  return {
+    Range: '{{now-' + (N + 1) + 'h..now-' + N + 'h}}',
+    LocalHour: '{{now-' + N + 'h}}',
+    Actual: actual,
+    Target: target,
+    Static: N > 0
+  };
+}
+
+var ProductionTrackerMain = {
+  Range: '{{now-8h..now}}',
+  HourlyData: [
+    hour(7, 22, 25), hour(6, 24, 25), hour(5, 18, 25), hour(4, 25, 25),
+    hour(3, 23, 25), hour(2, 27, 25), hour(1, 21, 25), hour(0, 14, 25)
   ]
 };
 
-var ProductionTracker_reservecapacity = {
-  'HourlyData': [
-    { 'LocalHour': '2021-01-14T09:00:00', 'Range': '[2021-01-14T08:00:00Z,2021-01-14T09:00:00Z)', 'Actual': 14, 'Target': 30, 'Static': true, 'ProductionCapacity': 30 },
-    { 'LocalHour': '2021-01-14T10:00:00', 'Range': '[2021-01-14T09:00:00Z,2021-01-14T10:00:00Z)', 'Actual': 0, 'Target': 22.5, 'Static': true, 'ProductionCapacity': 22.5 },
-    { 'LocalHour': '2021-01-14T11:00:00', 'Range': '[2021-01-14T10:00:00Z,2021-01-14T11:00:00Z)', 'Actual': 8, 'Target': 30, 'Static': true, 'ProductionCapacity': 30 },
-    { 'LocalHour': '2021-01-14T12:00:00', 'Range': '[2021-01-14T11:00:00Z,2021-01-14T12:00:00Z)', 'Actual': 15, 'Target': 0, 'Static': false, 'ProductionCapacity': 0 }
-    //,{ 'LocalHour': '2021-01-14T13:00:00', 'Range': 'empty', 'Actual': 0, 'Static': true, 'ProductionCapacity': 0 }
-  ],
-  'Range': '[2021-01-14T08:00:00Z,2021-01-14T12:00:00Z)',
-  'ProductionCapacity': 112.5,
-  'GlobalTarget': 112.5
+var ProductionTrackerMill = {
+  Range: '{{now-8h..now}}',
+  HourlyData: [
+    hour(7, 20, 25), hour(6, 22, 25), hour(5, 24, 25), hour(4, 23, 25),
+    hour(3, 25, 25), hour(2, 26, 25), hour(1, 24, 25), hour(0, 17, 25)
+  ]
 };
 
-
-var ProductionTracker_error = {
-  'ErrorMessage': 'Invalid group',
-  'Status': 'WrongRequestParameter'
+var ProductionTrackerLathe = {
+  Range: '{{now-8h..now}}',
+  HourlyData: [
+    hour(7, 10, 12), hour(6, 11, 12), hour(5,  9, 12), hour(4, 12, 12),
+    hour(3, 12, 12), hour(2, 11, 12), hour(1, 10, 12), hour(0,  6, 12)
+  ]
 };
 
-$.mockjax({
-  /*url: /^http:\/\/localhost:8082\/ProductionTracker\?Range=\[2020-05-05T08:00:00.000Z,2020-05-05T16:00:00.000Z\)&GroupId=*$/, */
-  url: 'http://localhost:8082/ProductionTracker?GroupId=18&Range=[2020-05-05T08:00:00.000Z,2020-05-05T16:00:00.000Z)',
-  responseTime: 1000,
-  responseText: ProductionTracker_8h_16h
-});
-
-$.mockjax({
-  url: /^http:\/\/localhost:8082\/ProductionTracker\?GroupId=47*$/,
-  responseTime: 1000,
-  responseText: ProductionTracker_reservecapacity
-});
-
-$.mockjax({
-  url: /^http:\/\/localhost:8082\/ProductionTracker\?GroupId=666&Range=\[2020-05-05T08:00:00.000Z,2020-05-05T16:00:00.000Z\)$/,
-  responseTime: 1000,
-  responseText: ProductionTracker_error
-});
+MOCK.respond('ProductionTracker', {
+  byGroupId: {
+    100: ProductionTrackerMain,
+    101: ProductionTrackerMill,
+    102: ProductionTrackerLathe
+  },
+  byMachineId: {
+    1: ProductionTrackerMill,
+    2: ProductionTrackerMill,
+    3: ProductionTrackerLathe
+  },
+  default: ProductionTrackerMain
+}, { delay: 300 });

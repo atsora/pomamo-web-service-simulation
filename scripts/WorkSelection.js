@@ -2,152 +2,60 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-var WorkSelectionJSON1 = {
-  'WorkInfoGroup': [ // ORDERED list given by web service
+require('./_helpers');
+
+(function () {
+  // Full catalog the mock can filter through.
+  var FULL = [
     {
-      'Display': 'WorkOrder',
-      'Kind': 'WorkOrder',  // Operation, Component, Part...
-      'Items': [ // ORDERED list
-        {
-          'Display': 'WorkOrder_1',
-          'Kind': 'WorkOrder',
-          'Id': 1 // To use in details
-          // Here, probably add recent / old / range / modifiable / obsolete...
-        },
-        {
-          'Display': 'WorkOrder_2',
-          'Kind': 'WorkOrder',
-          'Id': 2
-        },
-        {
-          'Display': 'WorkOrder_3',
-          'Kind': 'WorkOrder',
-          'Id': 3
-        },
-        {
-          'Display': 'WorkOrder_4',
-          'Kind': 'WorkOrder',
-          'Id': 4
-        },
-        {
-          'Display': 'WorkOrder_5',
-          'Kind': 'WorkOrder',
-          'Id': 5
-        },
-        {
-          'Display': 'WorkOrder_6 to hide at start',
-          'Kind': 'WorkOrder',
-          'Id': 6
-        }
+      Display: 'WorkOrder', Kind: 'WorkOrder',
+      Items: [
+        { Display: 'WO-1001', Kind: 'WorkOrder', Id: 1 },
+        { Display: 'WO-1002', Kind: 'WorkOrder', Id: 2 },
+        { Display: 'WO-1003', Kind: 'WorkOrder', Id: 3 },
+        { Display: 'WO-2042-special', Kind: 'WorkOrder', Id: 4 }
       ]
     },
     {
-      'Display': 'Component',
-      'Kind': 'Component',
-      'Items': [ // ORDERED list
-        {
-          'Display': 'Comp_1',
-          'Kind': 'Component',
-          'Id': 1 // To use in details
-          // Here, probably add recent / old / range / modifiable...
-        },
-        {
-          'Display': 'C2_searchstring',
-          'Kind': 'Component',
-          'Id': 2
-        },
-        {
-          'Display': 'Comp-3',
-          'Kind': 'Component',
-          'Id': 3
-        }
+      Display: 'Part', Kind: 'Part',
+      Items: [
+        { Display: 'PART-A', Kind: 'Part', Id: 11 },
+        { Display: 'PART-B', Kind: 'Part', Id: 12 },
+        { Display: 'PART-special-X42', Kind: 'Part', Id: 13 }
       ]
-    }
-  ]
-};
-
-var WorkSelectionJSON2 = {
-  'WorkInfoGroup': [ // ORDERED list
+    },
     {
-      'Display': 'Operation',
-      'Kind': 'Operation',  // Operation, Component, Part...
-      'Items': [ // ORDERED list
-        {
-          'Display': 'myoperation_1',
-          'Kind': 'operation',
-          'Id': 1 // To use in details
-          // Here, probably add recent / old / range / modifiable...
-        },
-        {
-          'Display': 'myoperation_22',
-          'Kind': 'Operation',
-          'Id': 2
-        }
+      Display: 'Operation', Kind: 'Operation',
+      Items: [
+        { Display: 'OP-1', Kind: 'Operation', Id: 21 },
+        { Display: 'OP-2', Kind: 'Operation', Id: 22 },
+        { Display: 'OP-special-finish', Kind: 'Operation', Id: 23 }
       ]
     }
-  ]
-};
+  ];
 
-var WorkSelectionJSON3 = WorkSelectionJSON1;
+  function filterCatalog (query) {
+    if (!query) return FULL;
+    // Support "Kind:home" → default page (return everything)
+    if (/^kind:home$/i.test(query)) return FULL;
+    // Support "kind:WorkOrder" → only that group
+    var kindMatch = /^kind:(\w+)/i.exec(query);
+    if (kindMatch) {
+      var kind = kindMatch[1].toLowerCase();
+      return FULL.filter(function (g) { return g.Kind.toLowerCase() === kind; });
+    }
+    // Otherwise: case-insensitive substring match on Display
+    var q = query.toLowerCase();
+    return FULL
+      .map(function (g) {
+        return Object.assign({}, g, {
+          Items: g.Items.filter(function (i) { return i.Display.toLowerCase().indexOf(q) !== -1; })
+        });
+      })
+      .filter(function (g) { return g.Items.length > 0; });
+  }
 
-var WorkSelectionJSON_parent_comp_2 = WorkSelectionJSON2;
-
-// Search : grammaire à définir
-// string = recherche textuelle (on id, display, ...) or key:<value>
-// where key: id, kind, parent, child, revision, machine, detected_since
-// 
-// id:
-//
-// kind:component => search only in components
-// kind:home => return only the objects
-// kind:(home|project|job|workorder|component|part|operation|sequence|intermediateworkpiece)
-// 
-// parent:<kind>:<id>
-// child:<kind>:<id>
-//
-// revision:latest, revision:-1
-// 
-// machine:(machine id or machine display): return only the items that were detected on a specific machine
-//
-// detected_since:date/time
-//
-// Probably more later.
-// Extract from PivotalTracker of possible syntaxes:
-/* Possible but not implemented yet
-created_on:11/16/2012
-updated_since:"Nov 16 2012"
-accepted_before:11/16/2012
-created:today
-updated:-1w
-accepted:-2weeks..today
-*/
-
-$.mockjax({
-  url: 'http://localhost:8082/WorkSelection',
-  responseTime: 1000,
-  responseText: WorkSelectionJSON1
-});
-
-$.mockjax({
-  url: 'http://localhost:8082/WorkSelection?Search=Kind:Operation',
-  responseTime: 1000,
-  responseText: WorkSelectionJSON2
-});
-
-$.mockjax({
-  url: 'http://localhost:8082/WorkSelection?Search=Kind:home',
-  responseTime: 1000,
-  responseText: WorkSelectionJSON3
-});
-
-$.mockjax({
-  url: 'http://localhost:8082/WorkSelection?Search=parent:Component:2',
-  responseTime: 1000,
-  responseText: WorkSelectionJSON_parent_comp_2
-});
-
-$.mockjax({
-  url: 'http://localhost:8082/WorkSelection?Search=504',
-  status: 504,
-  responseTime: 1000
-});
+  MOCK.respond('WorkSelection', function (call) {
+    return { WorkInfoGroup: filterCatalog(call.params.Search) };
+  }, { delay: 300 });
+})();

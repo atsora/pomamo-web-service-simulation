@@ -2,48 +2,40 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-var redStackLight_response = {
-  'Blocks': [{
-    'Range': '[2018-12-06T07:04:37Z,2018-12-06T07:09:35Z)',
-    'Color': '#FF0000',
-    'Details': [{
-      'Color': '#FF0000',
-      'Duration': 297
-    }]
-  }, {
-    'Range': '[2018-12-06T07:24:37Z,2018-12-06T07:29:34Z)',
-    'Color': '#FF0000',
-    'Details': [{
-      'Color': '#FF0000',
-      'Duration': 296
-    }]
-  }, {
-    'Range': '[2018-12-06T07:44:36Z,2018-12-06T07:49:34Z)',
-    'Color': '#FF0000',
-    'Details': [{
-      'Color': '#FF0000',
-      'Duration': 297
-    }]
-  }, {
-    'Range': '[2018-12-06T08:04:37Z,2018-12-06T08:09:35Z)',
-    'Color': '#FF0000',
-    'Details': [{
-      'Color': '#FF0000',
-      'Duration': 297
-    }]
-  }, {
-    'Range': '[2018-12-06T08:24:37Z,2018-12-06T08:29:35Z)',
-    'Color': '#FF0000',
-    'Details': [{
-      'Color': '#FF0000',
-      'Duration': 297
-    }]
-  }],
-  'Range': '[2018-12-06T07:00:00Z,2018-12-06T11:00:00Z)'
+// Mock for `CncValue/RedStackLight?MachineId=<id>&Range=<range>` — short red
+// stack-light pulses over the last ~4 hours.
+
+require('./_helpers');
+
+var RedStackLightJSON1 = {
+  Range: '{{now-4h..now}}',
+  Blocks: [
+    { Range: '{{now-3h36m..now-3h31m}}', Color: '#D32F2F', Details: [{ Color: '#D32F2F', Duration: 300 }] },
+    { Range: '{{now-2h53m..now-2h48m}}', Color: '#D32F2F', Details: [{ Color: '#D32F2F', Duration: 300 }] },
+    { Range: '{{now-2h10m..now-2h5m}}',  Color: '#D32F2F', Details: [{ Color: '#D32F2F', Duration: 300 }] },
+    { Range: '{{now-1h26m..now-1h21m}}', Color: '#D32F2F', Details: [{ Color: '#D32F2F', Duration: 300 }] },
+    { Range: '{{now-43m..now-38m}}',     Color: '#D32F2F', Details: [{ Color: '#D32F2F', Duration: 300 }] }
+  ]
 };
 
-$.mockjax({
-  url: /^http:\/\/localhost:8082\/CncValue\/RedStackLight\?MachineId=18\&Range=\[2018-12-06T07:00:00.000Z,2018-12-06T11:00:00.000Z\)&SkipDetails=true$/,
-  responseTime: 1000,
-  responseText: redStackLight_response
-});
+var RedStackLightJSON2 = {
+  Range: '{{now-4h..now}}',
+  Blocks: [
+    { Range: '{{now-2h..now-1h55m}}', Color: '#D32F2F', Details: [{ Color: '#D32F2F', Duration: 300 }] },
+    { Range: '{{now-30m..now-25m}}',  Color: '#D32F2F', Details: [{ Color: '#D32F2F', Duration: 300 }] }
+  ]
+};
+
+var RedStackLightJSON3 = {
+  Range: '{{now-4h..now}}',
+  Blocks: []
+};
+
+MOCK.respond('CncValue/RedStackLight', {
+  byMachineId: {
+    1: RedStackLightJSON1,
+    2: RedStackLightJSON2,
+    3: RedStackLightJSON3
+  },
+  default: RedStackLightJSON3
+}, { delay: 400 });

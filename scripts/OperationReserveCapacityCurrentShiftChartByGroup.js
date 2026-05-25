@@ -2,125 +2,65 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-var ReserveCapacityJSON18 =
-{
-  'DateTime': '2020-12-03T12:45:12.2507943Z',
-  'Day': '2020-12-03',
-  'Shift': { 'Id': 3, 'Display': 'Afternoon', 'Color': '#FFFF80' },
-  'ChartData': [
-    { 'GroupId': '47', 'GroupDisplay': '47: A1-1: A1-Machine1', 'ReserveCapacity': -12.602089952499995 },
-    { 'GroupId': '48', 'GroupDisplay': '48: A1-2: A1-Machine2', 'ReserveCapacity': -1.9633877923076994 }],
-  'ShiftGoal': 320
+// Mock for `Operation/ReserveCapacityCurrentShiftChartByGroup?ParentGroupId=<id>`
+// (chart) and `Operation/OperationCurrentShiftTarget?GroupId=<id>` (scalar).
+
+require('./_helpers');
+require('./scenario');
+
+var ChartMain = {
+  DateTime: '{{now}}',
+  Day:      '{{now}}',
+  Shift:    { Id: 1, Display: 'Day shift', Color: '#FFFF80' },
+  ChartData: [
+    { GroupId: '1', GroupDisplay: 'Machine 1',  ReserveCapacity: 12   },
+    { GroupId: '2', GroupDisplay: 'Machine 2',  ReserveCapacity: -3.5 },
+    { GroupId: '3', GroupDisplay: 'Machine 3', ReserveCapacity: 6.2  }
+  ],
+  ShiftGoal: 100 + 120 + 35 + 62
 };
 
-var ReserveCapacityJSON19 =
-{
-  'DateTime': '2020-01-02T00:00:00Z',
-  'Day': '20200102',
-  'Shift': { 'Display': 'morning' },
-  'ChartData':
-    [{
-      'GroupId': 1,
-      'GroupDisplay': 'OP5',
-      'ReserveCapacity': 5
-    },
-    {
-      'GroupId': 2,
-      'GroupDisplay': 'Op10',
-      'ReserveCapacity': 10
-    },
-    {
-      'GroupId': 50,
-      'GroupDisplay': 'OP50',
-      'ReserveCapacity': 8
-    }],
-  'ShiftGoal': 500
+var ChartMill = {
+  DateTime: '{{now}}',
+  Day:      '{{now}}',
+  Shift:    { Id: 1, Display: 'Day shift', Color: '#FFFF80' },
+  ChartData: [
+    { GroupId: '1', GroupDisplay: 'Machine 1', ReserveCapacity: 12   },
+    { GroupId: '2', GroupDisplay: 'Machine 2', ReserveCapacity: -3.5 }
+  ],
+  ShiftGoal: 100 + 120 + 35
 };
 
-var ReserveCapacityJSON20 =
-{
-  'DateTime': '2020-01-02T00:00:00Z',
-  'Day': '20200102',
-  'Shift': { 'Display': 'Morning' },
-  'ChartData':
-    [{
-      'GroupId': 1,
-      'GroupDisplay': 'OP5',
-      'ReserveCapacity': 5
-    },
-    {
-      'GroupId': 2,
-      'GroupDisplay': 'Op10',
-      'ReserveCapacity': -10
-    },
-    {
-      'GroupId': 50,
-      'GroupDisplay': 'OP50',
-      'ReserveCapacity': 5.8
-    }],
-  'ShiftGoal': 250
+var ChartLathe = {
+  DateTime: '{{now}}',
+  Day:      '{{now}}',
+  Shift:    { Id: 1, Display: 'Day shift', Color: '#FFFF80' },
+  ChartData: [
+    { GroupId: '3', GroupDisplay: 'Machine 3', ReserveCapacity: 6.2 }
+  ],
+  ShiftGoal: 100 + 62
 };
 
-var ReserveCapacityJSON_Error =
-{
-  'ExceptionName': 'AggregateException',
-  'ExceptionFullName': 'System.AggregateException',
-  'InnerException': {
-    'ExceptionName': 'NullReferenceException',
-    'ExceptionFullName': 'System.NullReferenceException',
-    'ErrorMessage': 'Object reference not set to an instance of an object.',
-    'Status': 'UnexpectedError',
-    'Details': ''
+var CHARTS = {};
+CHARTS[SCENARIO.MAIN_GROUP]  = ChartMain;
+CHARTS[SCENARIO.MILL_GROUP]  = ChartMill;
+CHARTS[SCENARIO.LATHE_GROUP] = ChartLathe;
+
+MOCK.respond('Operation/ReserveCapacityCurrentShiftChartByGroup', {
+  byGroupId: {
+    100: ChartMain,
+    101: ChartMill,
+    102: ChartLathe
   },
-  'ErrorMessage': 'One or more errors occurred. (Object reference not set to an instance of an object.)',
-  'Status': 'UnexpectedError', 'Details': ''
-};
+  default: ChartMain
+}, { delay: 400 });
 
-
-var invalidMachineResponse = {
-  'ErrorMessage': 'Invalid machine',
-  'Status': 'WrongRequestParameter'
-};
-
-var NotApplicableResponse = {
-  'ErrorMessage': 'Not Applicable Message',
-  'Status': 'NotApplicable'
-};
-
-$.mockjax({
-  url: 'http://localhost:8082/Operation/ReserveCapacityCurrentShiftChartByGroup?ParentGroupId=realERROR',
-  responseTime: 500,
-  responseText: ReserveCapacityJSON_Error
-});
-
-$.mockjax({
-  url: 'http://localhost:8082/Operation/ReserveCapacityCurrentShiftChartByGroup?ParentGroupId=18',
-  responseTime: 500,
-  responseText: ReserveCapacityJSON18
-});
-
-$.mockjax({
-  url: 'http://localhost:8082/Operation/ReserveCapacityCurrentShiftChartByGroup?ParentGroupId=19',
-  responseTime: 500,
-  responseText: ReserveCapacityJSON19
-});
-
-$.mockjax({
-  url: 'http://localhost:8082/Operation/ReserveCapacityCurrentShiftChartByGroup?ParentGroupId=20',
-  responseTime: 500,
-  responseText: ReserveCapacityJSON20
-});
-
-$.mockjax({
-  url: 'http://localhost:8082/Operation/ReserveCapacityCurrentShiftChartByGroup?ParentGroupId=128',
-  responseTime: 1000,
-  responseText: invalidMachineResponse,
-  status: 200 // Error status
-});
-
-$.mockjax({
-  url: /^http:\/\/localhost:8082\/Operation\/ReserveCapacityCurrentShiftChartByGroup\?ParentGroupId=129.*$/,
-  responseTime: 1000,
-  responseText: NotApplicableResponse,
-  status: 200 // Error status
-});
+// Scalar variant: only ShiftGoal + Shift + Day.
+MOCK.respond('Operation/OperationCurrentShiftTarget', {
+  byGroupId: {
+    100: { ShiftGoal: ChartMain.ShiftGoal,  Day: '{{now}}', Shift: ChartMain.Shift  },
+    101: { ShiftGoal: ChartMill.ShiftGoal,  Day: '{{now}}', Shift: ChartMill.Shift  },
+    102: { ShiftGoal: ChartLathe.ShiftGoal, Day: '{{now}}', Shift: ChartLathe.Shift }
+  },
+  default: { ShiftGoal: ChartMain.ShiftGoal, Day: '{{now}}', Shift: ChartMain.Shift }
+}, { delay: 300 });

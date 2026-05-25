@@ -2,121 +2,56 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-var GetLastMachineStatusJSON1 = {
-  'MachineStatus': {
-    'ReasonSlot': {
-      'Reason': {
-        'Text': 'My reason',
-        'Color': '#ffffff'
-      },
-      'Begin': '2015-05-05 08:08:08',
-      'OverwriteRequired': false
+// Mock for `GetLastMachineStatusV2?Id=<machineId>`.
+
+require('./_helpers');
+
+var GetLastMachineStatusV2JSON1 = {
+  MachineStatus: {
+    ReasonSlot: {
+      Reason: { Text: 'Motion', Color: '#2E7D32' },
+      Begin: '{{now-8m}}',
+      OverwriteRequired: false
     },
-    'MachineObservationState': {
-      'Id': 1
+    MachineObservationState: { Id: 2, Text: 'Maintenance', Color: '#FFC107', Display: 'Maintenance' },
+    MachineMode: { Display: 'Running', Color: '#2E7D32' }
+  }
+};
+
+var GetLastMachineStatusV2JSON2 = {
+  MachineStatus: {
+    ReasonSlot: {
+      Reason: { Text: 'Idle', Color: '#FFC107' },
+      Begin: '{{now-8m}}',
+      OverwriteRequired: false
     },
-    'MachineMode': {
-      'Id': 1
-    }
+    MachineObservationState: { Id: 3, Text: 'Off', Color: '#9E9E9E', Display: 'Off' },
+    MachineMode: { Display: 'Stopped', Color: '#FFC107' }
+  }
+};
+
+var GetLastMachineStatusV2JSON3 = {
+  MachineStatus: {
+    ReasonSlot: {
+      Reason: { Text: 'Error', Color: '#D32F2F' },
+      Begin: '{{now-8m}}',
+      OverwriteRequired: true
+    },
+    MachineObservationState: { Id: 1, Text: 'Production', Color: '#2E7D32', Display: 'Production' },
+    MachineMode: { Display: 'Error', Color: '#D32F2F' }
+  }
+};
+
+MOCK.respond('GetLastMachineStatusV2', {
+  byMachineId: {
+    1: GetLastMachineStatusV2JSON1,
+    2: GetLastMachineStatusV2JSON2,
+    3: GetLastMachineStatusV2JSON3
   },
-  'RequiredReason': true
-};
-var GetLastMachineStatusJSON2 = {
-  'MachineStatus': {
-    'ReasonSlot': {
-      'Reason': {
-        'Text': 'My reason',
-        'Color': '#ffffff'
-      },
-      'Begin': '2015-05-05 08:08:08',
-      'OverwriteRequired': true
-    },
-    'MachineObservationState': {
-      'Id': 1
-    },
-    'MachineMode': {
-      'Id': 1
-    }
+  byId: {
+    1: GetLastMachineStatusV2JSON1,
+    2: GetLastMachineStatusV2JSON2,
+    3: GetLastMachineStatusV2JSON3
   },
-  'RequiredReason': true
-};
-var GetLastMachineStatusJSON3 = {
-  'MachineStatus': {
-    'ReasonSlot': {
-      'Reason': {
-        'Text': 'My reason',
-        'Color': '#ffffff'
-      },
-      'Begin': '2015-05-05 08:08:08',
-      'OverwriteRequired': false
-    },
-    'MachineObservationState': {
-      'Id': 1
-    },
-    'MachineMode': {
-      'Id': 1
-    }
-  },
-  'RequiredReason': false
-};
-var GetLastMachineStatusJSON4 = {
-  'MachineStatus': {
-    'ReasonSlot': {
-      'Reason': {
-        'Text': 'My reason',
-        'Color': '#ffffff'
-      },
-      'Begin': '2015-05-05 08:08:08',
-      'OverwriteRequired': true
-    },
-    'MachineObservationState': {
-      'Id': 1
-    },
-    'MachineMode': {
-      'Id': 1
-    }
-  },
-  'RequiredReason': false
-};
-
-var invalidMachineResponse = {
-  'ErrorMessage': 'Invalid machine',
-  'Status': 'WrongRequestParameter'
-};
-
-$.mockjax({
-  url: /http:\/\/localhost:8082\/GetLastMachineStatusV2\?.*Id=18/,
-  responseTime: 10,
-  responseText: GetLastMachineStatusJSON1
-});
-
-$.mockjax({
-  url: /http:\/\/localhost:8082\/GetLastMachineStatusV2\?.*Id=19/,
-  responseTime: 1000,
-  responseText: GetLastMachineStatusJSON2
-});
-
-$.mockjax({
-  url: /http:\/\/localhost:8082\/GetLastMachineStatusV2\?.*Id=20/,
-  responseTime: 1000,
-  responseText: GetLastMachineStatusJSON3
-});
-
-$.mockjax({
-  url: /http:\/\/localhost:8082\/GetLastMachineStatusV2\?.*Id=21/,
-  responseTime: 1000,
-  responseText: GetLastMachineStatusJSON4
-});
-
-$.mockjax({
-  url: /http:\/\/localhost:8082\/GetLastMachineStatusV2\?.*Id=22/,
-  responseTime: 1000,
-  responseText: invalidMachineResponse,
-  status: 200
-});
-
-$.mockjax({
-  url: /http:\/\/localhost:8082\/GetLastMachineStatusV2\?.*Id=128/,
-  status: 504,
-  responseTime: 1000
-});
+  default: GetLastMachineStatusV2JSON1
+}, { delay: 400 });
