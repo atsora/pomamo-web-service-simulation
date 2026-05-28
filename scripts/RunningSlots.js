@@ -1,64 +1,78 @@
-// Copyright (C) 2009-2023 Lemoine Automation Technologies
+// Copyright (C) 2009-2026 Atsora Solutions
 //
 // SPDX-License-Identifier: Apache-2.0
 
 // Mock for `RunningSlots?MachineId=<id>&Range=<range>` — alternating
-// running/not-running slots over an 8-hour window.
+// running/not-running slots consumed by x-barstack and friends.
+//
+// Slots are computed FROM the asked Range param (proportional fractions),
+// so the bar always fills the requested window regardless of when the demo
+// is opened.
 
 require('./_helpers');
 
-// Machine 1: 4× running + 4× not-running alternating → 4h motion / 4h not.
-var RunningSlotsJSON1 = {
-  Range: '{{now-8h..now}}',
-  MotionDuration: 14400,
-  NotRunningDuration: 14400,
-  TotalDuration: 28800,
-  Blocks: [
-    { Range: '{{now-8h..now-7h}}', Running: false, NotRunning: true },
-    { Range: '{{now-7h..now-6h}}', Running: true,  NotRunning: false },
-    { Range: '{{now-6h..now-5h}}', Running: false, NotRunning: true },
-    { Range: '{{now-5h..now-4h}}', Running: true,  NotRunning: false },
-    { Range: '{{now-4h..now-3h}}', Running: false, NotRunning: true },
-    { Range: '{{now-3h..now-2h}}', Running: true,  NotRunning: false },
-    { Range: '{{now-2h..now-1h}}', Running: false, NotRunning: true },
-    { Range: '{{now-1h..now}}',    Running: true,  NotRunning: false }
+var PATTERNS = {
+  // Machine 1: 8 alternating slots (50% motion)
+  1: [
+    [0.125, { Running: false, NotRunning: true }],
+    [0.125, { Running: true,  NotRunning: false }],
+    [0.125, { Running: false, NotRunning: true }],
+    [0.125, { Running: true,  NotRunning: false }],
+    [0.125, { Running: false, NotRunning: true }],
+    [0.125, { Running: true,  NotRunning: false }],
+    [0.125, { Running: false, NotRunning: true }],
+    [0.125, { Running: true,  NotRunning: false }]
+  ],
+  // Machine 2: 75% motion, scattered stops
+  2: [
+    [0.25,   { Running: true,  NotRunning: false }],
+    [0.125,  { Running: false, NotRunning: true }],
+    [0.375,  { Running: true,  NotRunning: false }],
+    [0.125,  { Running: false, NotRunning: true }],
+    [0.125,  { Running: true,  NotRunning: false }]
+  ],
+  // Machine 3: 62.5% motion
+  3: [
+    [0.125, { Running: false, NotRunning: true }],
+    [0.25,  { Running: true,  NotRunning: false }],
+    [0.25,  { Running: false, NotRunning: true }],
+    [0.375, { Running: true,  NotRunning: false }]
   ]
 };
 
-// Machine 2: 6h running / 2h not → 75% motion.
-var RunningSlotsJSON2 = {
-  Range: '{{now-8h..now}}',
-  MotionDuration: 21600,
-  NotRunningDuration: 7200,
-  TotalDuration: 28800,
-  Blocks: [
-    { Range: '{{now-8h..now-6h}}', Running: true,  NotRunning: false },
-    { Range: '{{now-6h..now-5h}}', Running: false, NotRunning: true },
-    { Range: '{{now-5h..now-2h}}', Running: true,  NotRunning: false },
-    { Range: '{{now-2h..now-1h}}', Running: false, NotRunning: true },
-    { Range: '{{now-1h..now}}',    Running: true,  NotRunning: false }
-  ]
-};
+function buildBlocks (rangeParam, pattern) {
+  var r = MOCK.rangeFromParam(rangeParam, 8);
+  var lowerMs = r.lower.getTime();
+  var upperMs = r.upper.getTime();
+  var totalMs = upperMs - lowerMs;
+  var totalFrac = pattern.reduce(function (s, p) { return s + p[0]; }, 0);
+  var blocks = [];
+  var motionMs = 0;
+  var cursor = lowerMs;
+  for (var i = 0; i < pattern.length; i++) {
+    var frac = pattern[i][0] / totalFrac;
+    var tmpl = pattern[i][1];
+    var blockEnd = (i === pattern.length - 1) ? upperMs : Math.round(cursor + frac * totalMs);
+    var block = Object.assign({}, tmpl, {
+      Range: '[' + new Date(cursor).toISOString() + ',' + new Date(blockEnd).toISOString() + ')'
+    });
+    if (tmpl.Running) motionMs += (blockEnd - cursor);
+    blocks.push(block);
+    cursor = blockEnd;
+  }
+  var totalSec = Math.round(totalMs / 1000);
+  var motionSec = Math.round(motionMs / 1000);
+  return {
+    Range: '[' + r.lower.toISOString() + ',' + r.upper.toISOString() + ')',
+    MotionDuration: motionSec,
+    NotRunningDuration: totalSec - motionSec,
+    TotalDuration: totalSec,
+    Blocks: blocks
+  };
+}
 
-// Machine 3: 5h running / 3h not → 62.5% motion.
-var RunningSlotsJSON3 = {
-  Range: '{{now-8h..now}}',
-  MotionDuration: 18000,
-  NotRunningDuration: 10800,
-  TotalDuration: 28800,
-  Blocks: [
-    { Range: '{{now-8h..now-7h}}', Running: false, NotRunning: true },
-    { Range: '{{now-7h..now-5h}}', Running: true,  NotRunning: false },
-    { Range: '{{now-5h..now-3h}}', Running: false, NotRunning: true },
-    { Range: '{{now-3h..now}}',    Running: true,  NotRunning: false }
-  ]
-};
-
-MOCK.respond('RunningSlots', {
-  byMachineId: {
-    1: RunningSlotsJSON1,
-    2: RunningSlotsJSON2,
-    3: RunningSlotsJSON3
-  },
-  default: RunningSlotsJSON1
+MOCK.respond('RunningSlots', function (call) {
+  var n = Number(call.params.MachineId);
+  var pattern = PATTERNS[n] || PATTERNS[1];
+  return buildBlocks(call.params.Range, pattern);
 }, { delay: 400 });

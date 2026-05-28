@@ -1,41 +1,59 @@
-// Copyright (C) 2009-2023 Lemoine Automation Technologies
+// Copyright (C) 2009-2026 Atsora Solutions
 //
 // SPDX-License-Identifier: Apache-2.0
 
 // Mock for `OperationSlots?MachineId=<id>&Range=<range>` — operation slots
-// over the last 8 hours.
+// consumed by x-operationslotbar.
+//
+// Slots are computed FROM the asked Range param (proportional fractions),
+// so the bar always fills the requested window regardless of when the demo
+// is opened.
 
 require('./_helpers');
 
-var OperationSlotsJSON1 = {
-  Range: '{{now-8h..now}}',
-  Blocks: [
-    { Range: '{{now-8h..now-5h}}', Id: 4001, Display: 'OP1042-A', BgColor: '#0080FF', FgColor: '#FFFFFF' },
-    { Range: '{{now-5h..now-2h}}', Id: 4002, Display: 'OP1042-B', BgColor: '#2E7D32', FgColor: '#FFFFFF' },
-    { Range: '{{now-2h..now}}',    Id: 4003, Display: 'OP1043',   BgColor: '#FFC107', FgColor: '#000000' }
+var PATTERNS = {
+  // Machine 1 — 3 operations
+  1: [
+    [0.375, { Id: 4001, Display: 'OP1042-A', BgColor: '#0080FF', FgColor: '#FFFFFF' }],
+    [0.375, { Id: 4002, Display: 'OP1042-B', BgColor: '#2E7D32', FgColor: '#FFFFFF' }],
+    [0.25,  { Id: 4003, Display: 'OP1043',   BgColor: '#FFC107', FgColor: '#000000' }]
+  ],
+  // Machine 2 — 2 operations
+  2: [
+    [0.5, { Id: 4001, Display: 'OP1042-A', BgColor: '#0080FF', FgColor: '#FFFFFF' }],
+    [0.5, { Id: 4002, Display: 'OP1042-B', BgColor: '#2E7D32', FgColor: '#FFFFFF' }]
+  ],
+  // Machine 3 — single uniform operation
+  3: [
+    [1.0, { Id: 4003, Display: 'OP1043', BgColor: '#FFC107', FgColor: '#000000' }]
   ]
 };
 
-var OperationSlotsJSON2 = {
-  Range: '{{now-8h..now}}',
-  Blocks: [
-    { Range: '{{now-8h..now-4h}}', Id: 4001, Display: 'OP1042-A', BgColor: '#0080FF', FgColor: '#FFFFFF' },
-    { Range: '{{now-4h..now}}',    Id: 4002, Display: 'OP1042-B', BgColor: '#2E7D32', FgColor: '#FFFFFF' }
-  ]
-};
+function buildBlocks (rangeParam, pattern) {
+  var r = MOCK.rangeFromParam(rangeParam, 8);
+  var lowerMs = r.lower.getTime();
+  var upperMs = r.upper.getTime();
+  var totalMs = upperMs - lowerMs;
+  var totalFrac = pattern.reduce(function (s, p) { return s + p[0]; }, 0);
+  var blocks = [];
+  var cursor = lowerMs;
+  for (var i = 0; i < pattern.length; i++) {
+    var frac = pattern[i][0] / totalFrac;
+    var tmpl = pattern[i][1];
+    var blockEnd = (i === pattern.length - 1) ? upperMs : Math.round(cursor + frac * totalMs);
+    blocks.push(Object.assign({}, tmpl, {
+      Range: '[' + new Date(cursor).toISOString() + ',' + new Date(blockEnd).toISOString() + ')'
+    }));
+    cursor = blockEnd;
+  }
+  return {
+    Range: '[' + r.lower.toISOString() + ',' + r.upper.toISOString() + ')',
+    Blocks: blocks
+  };
+}
 
-var OperationSlotsJSON3 = {
-  Range: '{{now-8h..now}}',
-  Blocks: [
-    { Range: '{{now-8h..now}}', Id: 4003, Display: 'OP1043', BgColor: '#FFC107', FgColor: '#000000' }
-  ]
-};
-
-MOCK.respond('OperationSlots', {
-  byMachineId: {
-    1: OperationSlotsJSON1,
-    2: OperationSlotsJSON2,
-    3: OperationSlotsJSON3
-  },
-  default: OperationSlotsJSON1
+MOCK.respond('OperationSlots', function (call) {
+  var n = Number(call.params.MachineId);
+  var pattern = PATTERNS[n] || PATTERNS[1];
+  return buildBlocks(call.params.Range, pattern);
 }, { delay: 400 });

@@ -40,8 +40,12 @@ require('./scenario');
     var n = Number(gidRaw);
     if (!isNaN(n) && MAP[n]) {
       info = MAP[n];
+    } else if (/^G(\d+)\.\d+$/i.test(gidRaw)) {
+      // Nested sub-group (G<size>.<index>) — terminal leaf, no further expansion.
+      // Without this guard, the wildcard regex below would recurse infinitely.
+      info = { children: [], single: [] };
     } else {
-      var m = /^G(\d+)(?:\.\d+)?$/i.exec(gidRaw);
+      var m = /^G(\d+)$/i.exec(gidRaw);
       info = m ? syntheticGroup(Number(m[1])) : { children: [], single: [] };
     }
     return {

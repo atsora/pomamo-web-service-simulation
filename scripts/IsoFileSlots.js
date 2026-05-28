@@ -1,42 +1,60 @@
-// Copyright (C) 2009-2023 Lemoine Automation Technologies
+// Copyright (C) 2009-2026 Atsora Solutions
 //
 // SPDX-License-Identifier: Apache-2.0
 
 // Mock for `IsoFileSlots?MachineId=<id>&Range=<range>` — ISO-file slots
-// over the last 8 hours.
+// consumed by x-isofileslotbar.
+//
+// Slots are computed FROM the asked Range param (proportional fractions),
+// so the bar always fills the requested window regardless of when the demo
+// is opened.
 
 require('./_helpers');
 
-var IsoFileSlotsJSON1 = {
-  Range: '{{now-8h..now}}',
-  IsoFileSlots: [
-    { Range: '{{now-8h..now-6h}}', Display: 'IsoFile_A',                       BgColor: '#2E7D32', FgColor: '#FFFFFF' },
-    { Range: '{{now-6h..now-4h}}', Display: 'IsoFile_B (long display name)',   BgColor: '#0080FF', FgColor: '#FFFFFF' },
-    { Range: '{{now-4h..now-2h}}', Display: 'IsoFile_C',                       BgColor: '#7B1FA2', FgColor: '#FFFFFF' },
-    { Range: '{{now-2h..now}}',    Display: 'IsoFile_D',                       BgColor: '#FFC107', FgColor: '#000000' }
+var PATTERNS = {
+  // Machine 1 — 4 ISO files
+  1: [
+    [0.25, { Display: 'IsoFile_A',                     BgColor: '#2E7D32', FgColor: '#FFFFFF' }],
+    [0.25, { Display: 'IsoFile_B (long display name)', BgColor: '#0080FF', FgColor: '#FFFFFF' }],
+    [0.25, { Display: 'IsoFile_C',                     BgColor: '#7B1FA2', FgColor: '#FFFFFF' }],
+    [0.25, { Display: 'IsoFile_D',                     BgColor: '#FFC107', FgColor: '#000000' }]
+  ],
+  // Machine 2 — 2 ISO files
+  2: [
+    [0.5, { Display: 'IsoFile_A', BgColor: '#2E7D32', FgColor: '#FFFFFF' }],
+    [0.5, { Display: 'IsoFile_B', BgColor: '#0080FF', FgColor: '#FFFFFF' }]
+  ],
+  // Machine 3 — single uniform ISO file
+  3: [
+    [1.0, { Display: 'IsoFile_LATHE', BgColor: '#7B1FA2', FgColor: '#FFFFFF' }]
   ]
 };
 
-var IsoFileSlotsJSON2 = {
-  Range: '{{now-8h..now}}',
-  IsoFileSlots: [
-    { Range: '{{now-8h..now-4h}}', Display: 'IsoFile_A', BgColor: '#2E7D32', FgColor: '#FFFFFF' },
-    { Range: '{{now-4h..now}}',    Display: 'IsoFile_B', BgColor: '#0080FF', FgColor: '#FFFFFF' }
-  ]
-};
+function buildSlots (rangeParam, pattern) {
+  var r = MOCK.rangeFromParam(rangeParam, 8);
+  var lowerMs = r.lower.getTime();
+  var upperMs = r.upper.getTime();
+  var totalMs = upperMs - lowerMs;
+  var totalFrac = pattern.reduce(function (s, p) { return s + p[0]; }, 0);
+  var slots = [];
+  var cursor = lowerMs;
+  for (var i = 0; i < pattern.length; i++) {
+    var frac = pattern[i][0] / totalFrac;
+    var tmpl = pattern[i][1];
+    var slotEnd = (i === pattern.length - 1) ? upperMs : Math.round(cursor + frac * totalMs);
+    slots.push(Object.assign({}, tmpl, {
+      Range: '[' + new Date(cursor).toISOString() + ',' + new Date(slotEnd).toISOString() + ')'
+    }));
+    cursor = slotEnd;
+  }
+  return {
+    Range: '[' + r.lower.toISOString() + ',' + r.upper.toISOString() + ')',
+    IsoFileSlots: slots
+  };
+}
 
-var IsoFileSlotsJSON3 = {
-  Range: '{{now-8h..now}}',
-  IsoFileSlots: [
-    { Range: '{{now-8h..now}}', Display: 'IsoFile_LATHE', BgColor: '#7B1FA2', FgColor: '#FFFFFF' }
-  ]
-};
-
-MOCK.respond('IsoFileSlots', {
-  byMachineId: {
-    1: IsoFileSlotsJSON1,
-    2: IsoFileSlotsJSON2,
-    3: IsoFileSlotsJSON3
-  },
-  default: IsoFileSlotsJSON1
+MOCK.respond('IsoFileSlots', function (call) {
+  var n = Number(call.params.MachineId);
+  var pattern = PATTERNS[n] || PATTERNS[1];
+  return buildSlots(call.params.Range, pattern);
 }, { delay: 400 });

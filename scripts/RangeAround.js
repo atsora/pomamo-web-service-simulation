@@ -12,7 +12,15 @@ MOCK.respond('RangeAround', function (call) {
   if (isNaN(around.getTime())) around = new Date();
   var size = Number(call.params.RangeSize || 1);
   var type = (call.params.RangeType || 'day').toLowerCase();
-  var hoursPerUnit = type === 'week' ? 168 : type === 'shift' ? 8 : 24;
+  // hour=1h, shift=8h, day=24h, week=168h, month=24*30=720h, year=24*365=8760h
+  var hoursPerUnit = {
+    hour:    1,
+    shift:   8,
+    day:    24,
+    week:  168,
+    month: 720,
+    year: 8760
+  }[type] || 24;
   var halfMs = hoursPerUnit * size / 2 * 3600000;
   var lowerIso = new Date(around.getTime() - halfMs).toISOString();
   var upperIso = new Date(around.getTime() + halfMs).toISOString();

@@ -83,10 +83,13 @@ require('./scenario');
   }
 
   // Detect "reserved ID" semantics in any param of the call.
+  // Recognised param names: MachineId, GroupId, Id, ParentGroupId.
+  // ParentGroupId is added so x-chartreservecapacity (which sends
+  // ?ParentGroupId=<id>) participates in the 999/998/997 convention.
   function reservedIdFromCall (call) {
     var s = scenario();
     if (!s) return null;
-    var checkValues = ['MachineId', 'GroupId', 'Id'];
+    var checkValues = ['MachineId', 'GroupId', 'Id', 'ParentGroupId'];
     for (var k = 0; k < checkValues.length; k++) {
       var v = call.params[checkValues[k]];
       if (v === undefined) continue;
@@ -300,7 +303,8 @@ require('./scenario');
 
   function rangeFromParam (param, fallbackHours) {
     if (!param) return nowRange(fallbackHours || 8);
-    var m = /^[\[\(]([^,]+),([^\]\)]+)[\]\)]$/.exec(param);
+    // Accept both `,` and `;` separators (the codebase uses both interchangeably).
+    var m = /^[\[\(]([^,;]+)[,;]([^\]\)]+)[\]\)]$/.exec(param);
     if (!m) return nowRange(fallbackHours || 8);
     var lower = new Date(m[1]);
     var upper = new Date(m[2]);
