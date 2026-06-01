@@ -220,72 +220,127 @@ require('./scenario');
     return def.default !== undefined ? def.default : null;
   }
 
-  // ─── Register a mockjax handler ──────────────────────────────────────────
+  // ─── Fetch interceptor (replaces mockjax) ────────────────────────────────
+  // pulse.service.js migrated from $.ajax to native fetch — mockjax's monkey-
+  // patch on $.ajax is dead. We register each MOCK.respond() into a list and
+  // intercept `window.fetch` once: requests matching a registered regex are
+  // served from the builder; others fall through to native fetch. Keeps the
+  // existing MOCK.respond declarations and the builder ergonomics (`this.status`,
+  // `this.responseText`, `this.responseTime`) verbatim.
+  var _handlers = [];           // [{ regex, type, defaultDelay, run(call, ctx) }]
+  var _fetchInstalled = false;
+  var _nativeFetch = global.fetch ? global.fetch.bind(global) : null;
+
+  function _installFetchInterceptor () {
+    if (_fetchInstalled || !global.fetch) return;
+    _fetchInstalled = true;
+    _nativeFetch = global.fetch.bind(global);
+
+    global.fetch = function (input, init) {
+      var url = typeof input === 'string' ? input : (input && input.url) || '';
+      var method = (init && init.method) || (input && input.method) || 'GET';
+      method = String(method).toUpperCase();
+
+      for (var i = 0; i < _handlers.length; i++) {
+        var h = _handlers[i];
+        if (h.type && String(h.type).toUpperCase() !== method) continue;
+        if (!h.regex.test(url)) continue;
+
+        // Build a mockjax-compatible call descriptor.
+        var settings = {
+          url: url,
+          type: method,
+          data: init ? init.body : undefined
+        };
+        var ctx = { status: 200, responseText: '', responseTime: h.defaultDelay };
+        h.run(settings, ctx);
+
+        var delay = ctx.responseTime || 0;
+        return new Promise(function (resolve) {
+          setTimeout(function () {
+            var body = ctx.responseText;
+            if (typeof body !== 'string') {
+              try { body = JSON.stringify(body); }
+              catch (e) { body = String(body); }
+            }
+            resolve(new Response(body, {
+              status: ctx.status || 200,
+              statusText: ctx.status >= 400 ? 'Error' : 'OK',
+              headers: { 'Content-Type': 'application/json' }
+            }));
+          }, delay);
+        });
+      }
+
+      // No handler matched — fall through to native fetch.
+      return _nativeFetch(input, init);
+    };
+  }
+
+  // ─── Register a mock handler ─────────────────────────────────────────────
   // Forms:
   //   MOCK.respond('ProductionTracker', function (call) { return {...}; }, { delay: 300 })
   //   MOCK.respond('CncAlarm/Current', { byMachineId: { 1: JSON1, 2: JSON2, 3: JSON3 } })
   //   MOCK.respond('I18N/Catalog', { static: CATALOG })
   function respond (endpoint, definition, opts) {
     opts = opts || {};
+    _installFetchInterceptor();
     var re = endpointRegex(endpoint);
     var declarative = isDeclarative(definition);
-    var cfg = {
-      url: re,
-      responseTime: opts.delay !== undefined ? opts.delay : 200,
-      type: opts.method || undefined,
-      response: function (settings) {
-        var call = parseCall(settings.url, settings);
-        call.settings = settings;
-        call.urlString = settings.url;
+    var defaultDelay = opts.delay !== undefined ? opts.delay : 200;
 
-        var reserved = opts.honourReservedIds === false ? null : reservedIdFromCall(call);
-        if (reserved === 'error') {
-          this.status = 400;
-          this.responseText = errorBody('Reserved error id', 'WrongRequestParameter');
-          return;
-        }
-        if (reserved === 'slow') {
-          this.responseTime = 5000;
-        }
-        if (reserved === 'empty' && opts.emptyBuilder) {
-          this.responseText = opts.emptyBuilder(call);
-          return;
-        }
+    function run (settings, ctx) {
+      var call = parseCall(settings.url, settings);
+      call.settings = settings;
+      call.urlString = settings.url;
 
-        var result;
-        try {
-          if (declarative) {
-            var picked = pickFromDeclarative(definition, call);
-            if (picked === null || picked === undefined) {
-              this.status = opts.notFoundStatus || 404;
-              this.responseText = errorBody('No mock data for this id', 'NotFound');
-              return;
-            }
-            result = materialise(picked, new Date());
-          } else {
-            // Function form: resolve any sentinel strings the builder may have
-            // dropped into its return value (so files can declare literal
-            // JSON tables and route them through a small dispatch function).
-            result = materialise(definition(call), new Date());
-          }
-        } catch (e) {
-          console.error('[MOCK] builder threw for', endpoint, e);
-          this.status = 500;
-          this.responseText = errorBody(String(e && e.message), 'InternalError');
-          return;
-        }
-        if (result && typeof result === 'object' && '__status' in result) {
-          this.status = result.__status;
-          this.responseText = result.body;
-        } else {
-          this.responseText = result;
-        }
+      var reserved = opts.honourReservedIds === false ? null : reservedIdFromCall(call);
+      if (reserved === 'error') {
+        ctx.status = 400;
+        ctx.responseText = errorBody('Reserved error id', 'WrongRequestParameter');
+        return;
       }
-    };
-    if (!opts.method) {
-      delete cfg.type; // omit instead of undefined, mockjax checks presence
+      if (reserved === 'slow') {
+        ctx.responseTime = 5000;
+      }
+      if (reserved === 'empty' && opts.emptyBuilder) {
+        ctx.responseText = opts.emptyBuilder(call);
+        return;
+      }
+
+      var result;
+      try {
+        if (declarative) {
+          var picked = pickFromDeclarative(definition, call);
+          if (picked === null || picked === undefined) {
+            ctx.status = opts.notFoundStatus || 404;
+            ctx.responseText = errorBody('No mock data for this id', 'NotFound');
+            return;
+          }
+          result = materialise(picked, new Date());
+        } else {
+          result = materialise(definition(call), new Date());
+        }
+      } catch (e) {
+        console.error('[MOCK] builder threw for', endpoint, e);
+        ctx.status = 500;
+        ctx.responseText = errorBody(String(e && e.message), 'InternalError');
+        return;
+      }
+      if (result && typeof result === 'object' && '__status' in result) {
+        ctx.status = result.__status;
+        ctx.responseText = result.body;
+      } else {
+        ctx.responseText = result;
+      }
     }
-    $.mockjax(cfg);
+
+    _handlers.push({
+      regex: re,
+      type: opts.method || null,
+      defaultDelay: defaultDelay,
+      run: run
+    });
   }
 
   // Useful range helpers — every duration is in hours unless noted.
@@ -312,8 +367,37 @@ require('./scenario');
     return { lower: lower, upper: upper, str: param };
   }
 
+  // ─── Low-level escape hatch for mockjax-style handlers ────────────────────
+  // Used by mocks that have a custom URL match (full URL, regex, or POST with
+  // body parsing) and want to keep the mockjax `this.responseText` / `this.status`
+  // API verbatim. The handler is called with `settings = { url, type, data }`
+  // and `this` set to the response context.
+  function respondRaw (urlMatcher, handler, opts) {
+    opts = opts || {};
+    _installFetchInterceptor();
+    var re;
+    if (urlMatcher instanceof RegExp) {
+      re = urlMatcher;
+    } else {
+      // String → exact-match regex (escape special chars).
+      var escaped = String(urlMatcher).replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+      re = new RegExp(escaped + '(\\?.*)?$');
+    }
+    var defaultDelay = opts.delay !== undefined ? opts.delay : 200;
+    _handlers.push({
+      regex: re,
+      type: opts.method || null,
+      defaultDelay: defaultDelay,
+      run: function (settings, ctx) {
+        // Bind `this` to ctx so existing mockjax-style handlers work unchanged.
+        handler.call(ctx, settings);
+      }
+    });
+  }
+
   global.MOCK = {
     respond:        respond,
+    respondRaw:     respondRaw,
     errorBody:      errorBody,
     rangeFromParam: rangeFromParam
   };

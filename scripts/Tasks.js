@@ -2,6 +2,11 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
+// Loads the shared MOCK helpers (fetch interceptor + respondRaw + scenario).
+// Previously this file used global `$.mockjax` directly so no require was
+// needed; the migration to a fetch-based interceptor requires the helpers.
+require('./_helpers');
+
 // Mock data for Tasks GraphQL service
 
 // Sample task types
@@ -301,8 +306,11 @@ var mockTaskInstances = [
   }
 ];
 
-// GraphQL endpoint mock
-var graphqlEndpoint = 'http://localhost:8080/graphql';
+// GraphQL endpoint mock — matched by path suffix so the same regex catches
+// `http://localhost:8080/graphql`, `http://demo2.atsora.eu:5000/graphql`,
+// and any other host the configured `path` may point to. Mirrors the
+// convention used by MOCK.respond for the REST endpoints.
+var graphqlEndpoint = /\/graphql(\?.*)?$/i;
 
 // Helper function to parse GraphQL query
 function parseGraphQLRequest(data) {
@@ -372,11 +380,11 @@ function getTaskInstanceForMachine(machineId) {
   return last;
 }
 
-// Mock GraphQL responses
-$.mockjax({
-  url: graphqlEndpoint,
-  type: 'POST',
-  response: function (settings) {
+// Mock GraphQL responses — registered via MOCK.respondRaw so the same
+// `this.responseText` / `this.status` API used below works through the
+// new fetch interceptor (mockjax patched $.ajax which no longer exists
+// since the pulse.service.js migration).
+MOCK.respondRaw(graphqlEndpoint, function (settings) {
     var requestData = parseGraphQLRequest(settings.data);
     if (!requestData) {
       this.responseText = {
@@ -773,6 +781,4 @@ $.mockjax({
         'errors': [{ 'message': 'Unknown query or mutation: ' + (operationName || 'unnamed') }]
       };
     }
-  },
-  responseTime: 500
-});
+}, { method: 'POST', delay: 500 });
