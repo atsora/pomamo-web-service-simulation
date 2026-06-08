@@ -1,4 +1,5 @@
 // Copyright (C) 2009-2023 Lemoine Automation Technologies
+// Copyright (C) 2023-2026 Atsora Solutions
 //
 // SPDX-License-Identifier: Apache-2.0
 
@@ -190,17 +191,52 @@ var mockTaskTemplates = [
   }
 ];
 
-// Sample task instances
+// Sample task instances — machineId aligned to the shared scenario
+// (1=Mill-01, 2=Mill-02, 3=Lathe-01; 4=Manual-01 left empty). Dates are
+// relative to load time so the demos always show a coherent
+// in-progress / upcoming / late / done mix.
+var ANCHOR = new Date();
+var H = 3600 * 1000;
+var DAY = 24 * H;
+function rel (ms) {
+  return new Date(ANCHOR.getTime() + ms).toISOString();
+}
+
 var mockTaskInstances = [
+  // --- Machine 1 (Mill-01): several tasks → x-task panel + tabs, x-cycletask ---
   {
     'id': 'inst-1',
-    'machineId': '18',
-    'taskTemplate': mockTaskTemplates[0],
-    'start': '2026-01-20T09:00:00',
-    'end': '2026-01-20T10:00:00',
+    'machineId': '1',
+    'taskTemplate': mockTaskTemplates[0], // Quality — in progress
+    'start': rel(-2 * H),
+    'end': rel(2 * H),
+    'result': null
+  },
+  {
+    'id': 'inst-2',
+    'machineId': '1',
+    'taskTemplate': mockTaskTemplates[1], // Maintenance — upcoming
+    'start': rel(4 * H),
+    'end': rel(8 * H),
+    'result': null
+  },
+  {
+    'id': 'inst-3',
+    'machineId': '1',
+    'taskTemplate': mockTaskTemplates[2], // ShiftChangeMessage — late
+    'start': rel(-1 * DAY),
+    'end': rel(-2 * H),
+    'result': null
+  },
+  {
+    'id': 'inst-4',
+    'machineId': '1',
+    'taskTemplate': mockTaskTemplates[0], // Quality — done
+    'start': rel(-3 * DAY),
+    'end': rel(-3 * DAY + H),
     'result': {
       '__typename': 'ITaskInstanceResultQuality',
-      'dateTime': '2026-01-19T16:30:00',
+      'dateTime': rel(-3 * DAY + H),
       'completion': 'Validated',
       'comment': 'All measurements within tolerance',
       'measures': [
@@ -215,95 +251,46 @@ var mockTaskInstances = [
       ]
     }
   },
-  {
-    'id': 'inst-2',
-    'machineId': '18',
-    'taskTemplate': mockTaskTemplates[1],
-    'start': '2025-11-13T08:00:00',
-    'end': '2025-11-13T09:00:00',
-    'result': {
-      '__typename': 'ITaskInstanceResultMaintenance',
-      'dateTime': '2025-11-13T08:15:00',
-      'completion': 'Validated',
-      'comment': 'Oil level OK, filter clean'
-    }
-  },
-  {
-    'id': 'inst-3',
-    'machineId': '18',
-    'taskTemplate': mockTaskTemplates[0],
-    'start': '2026-01-20T09:00:00',
-    'end': '2026-01-20T17:00:00',
-    'result': null
-  }
-  ,
-  // Past instances (no result)
-  {
-    'id': 'inst-4',
-    'machineId': '21',
-    'taskTemplate': mockTaskTemplates[0],
-    'start': '2026-01-20T08:00:00',
-    'end': '2026-01-20T09:00:00',
-    'result': null
-  },
+  // --- Machine 2 (Mill-02): a single long-running task + one done ---
   {
     'id': 'inst-5',
-    'machineId': '22',
-    'taskTemplate': mockTaskTemplates[1],
-    'start': '2026-01-20T10:00:00',
-    'end': '2026-01-20T11:00:00',
+    'machineId': '2',
+    'taskTemplate': mockTaskTemplates[4], // DocAck — long-running
+    'start': rel(-12 * H),
+    'end': rel(2 * DAY),
     'result': null
   },
   {
     'id': 'inst-6',
-    'machineId': '18',
-    'taskTemplate': mockTaskTemplates[2],
-    'start': '2026-01-20T09:00:00',
-    'end': '2026-01-20T17:00:00',
-    'result': null
+    'machineId': '2',
+    'taskTemplate': mockTaskTemplates[1], // Maintenance — done
+    'start': rel(-2 * DAY),
+    'end': rel(-2 * DAY + H),
+    'result': {
+      '__typename': 'ITaskInstanceResultMaintenance',
+      'dateTime': rel(-2 * DAY + H),
+      'completion': 'Validated',
+      'comment': 'Oil level OK, filter clean'
+    }
   },
-  // Present-day instances (around current date)
+  // --- Machine 3 (Lathe-01): current + upcoming → x-cycletask machine 3 ---
   {
     'id': 'inst-7',
-    'machineId': '18',
-    'taskTemplate': mockTaskTemplates[0],
-    'start': '2026-01-20T09:00:00',
-    'end': '2026-01-20T17:00:00',
+    'machineId': '3',
+    'taskTemplate': mockTaskTemplates[1], // Maintenance — in progress
+    'start': rel(-1 * H),
+    'end': rel(3 * H),
     'result': null
   },
   {
     'id': 'inst-8',
-    'machineId': '20',
-    'taskTemplate': mockTaskTemplates[3],
-    'start': '2025-11-30T20:00:00',
-    'end': '2025-12-16T04:00:00',
-    'result': null
-  },
-  {
-    'id': 'inst-9',
-    'machineId': '18',
-    'taskTemplate': mockTaskTemplates[1],
-    'start': '2026-01-21T18:00:00',
-    'end': '2026-01-21T19:00:00',
-    'result': null
-  },
-  // Future instances (no result yet)
-  {
-    'id': 'inst-10',
-    'machineId': '18',
-    'taskTemplate': mockTaskTemplates[0],
-    'start': '2026-01-10T08:00:00',
-    'end': '2026-01-10T16:00:00',
-    'result': null
-  },
-  {
-    'id': 'inst-11',
-    'machineId': '18',
-    'taskTemplate': mockTaskTemplates[4],
-    'start': '2026-01-22T09:00:00',
-    'end': '2026-01-22T17:00:00',
+    'machineId': '3',
+    'taskTemplate': mockTaskTemplates[0], // Quality — upcoming
+    'start': rel(1 * DAY),
+    'end': rel(1 * DAY + 2 * H),
     'result': null
   }
+  // Machine 4 (Manual-01): intentionally no tasks (empty-list demo case)
 ];
 
 // GraphQL endpoint mock — matched by path suffix so the same regex catches
