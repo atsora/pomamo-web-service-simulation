@@ -5,8 +5,14 @@
     "Lemoine Automation Technologies <nrelange@lemoinetechnologies.com>",
     "Nicolas Relange <nicolas@atsora.com>"
   ],
-  "files": ["**", "!.git/**", "!.gitignore", "!.gitattributes", "!.eslintrc.json", "!.vscode/**"],
-  "dependencies": {},
+  "files": [
+    "**",
+    "!.git/**",
+    "!.gitignore",
+    "!.gitattributes",
+    "!.eslintrc.json",
+    "!.vscode/**"
+  ],
   "engines": {
     "yarn": ">= 1.0.0"
   }
