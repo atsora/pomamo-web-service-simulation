@@ -4,10 +4,16 @@
 // SPDX-License-Identifier: Apache-2.0
 
 // Mock for `MachineStateTemplateSlots?MachineId=<id>&Range=<range>` —
-// segmented production-state slots consumed by x-machinestatebar.
+// segmented production-state slots consumed by x-machinestatebar, and read by
+// x-lastmachinestatetemplate, which takes the first slot as the current one.
 //
 // Slots are computed FROM the asked Range param (proportional fractions),
 // so the bar always fits regardless of the time of day the demo is opened.
+//
+// Category is the category of the state template on the server side. Only 2,
+// the set-up category, changes anything on the client: x-lastmachinestatetemplate
+// then drops its label and mounts an x-setupmachine instead. Any other value is
+// shown as a plain "Scheduled status: ..." label.
 
 require('./_helpers');
 
@@ -16,18 +22,28 @@ require('./_helpers');
 var PATTERNS = {
   // Machine 1 — 3 slots: production / maintenance / production
   1: [
-    [0.50, { Id: 1, Display: 'Production',  BgColor: '#2E7D32', FgColor: '#FFFFFF' }],
-    [0.25, { Id: 2, Display: 'Maintenance', BgColor: '#FFC107', FgColor: '#000000', PatternName: 'dots-3', PatternColor: '#ededed' }],
-    [0.25, { Id: 1, Display: 'Production',  BgColor: '#2E7D32', FgColor: '#FFFFFF' }]
+    [0.50, { Id: 1, Display: 'Production',  Category: 1, BgColor: '#2E7D32', FgColor: '#FFFFFF' }],
+    [0.25, { Id: 2, Display: 'Maintenance', Category: 1, BgColor: '#FFC107', FgColor: '#000000', PatternName: 'dots-3', PatternColor: '#ededed' }],
+    [0.25, { Id: 1, Display: 'Production',  Category: 1, BgColor: '#2E7D32', FgColor: '#FFFFFF' }]
   ],
   // Machine 2 — 2 slots: long production + final stop
   2: [
-    [0.875, { Id: 1, Display: 'Production', BgColor: '#2E7D32', FgColor: '#FFFFFF' }],
-    [0.125, { Id: 3, Display: 'Off',        BgColor: '#9E9E9E', FgColor: '#FFFFFF', PatternName: 'diagonal-stripe-1', PatternColor: '#ededed' }]
+    [0.875, { Id: 1, Display: 'Production', Category: 1, BgColor: '#2E7D32', FgColor: '#FFFFFF' }],
+    [0.125, { Id: 3, Display: 'Off',        Category: 1, BgColor: '#9E9E9E', FgColor: '#FFFFFF', PatternName: 'diagonal-stripe-1', PatternColor: '#ededed' }]
   ],
   // Machine 3 — uniform single block
   3: [
-    [1.0, { Id: 1, Display: 'Production', BgColor: '#2E7D32', FgColor: '#FFFFFF' }]
+    [1.0, { Id: 1, Display: 'Production', Category: 1, BgColor: '#2E7D32', FgColor: '#FFFFFF' }]
+  ],
+  // Machine 4 — set-up: the whole period is in the set-up category, so
+  // x-lastmachinestatetemplate mounts an x-setupmachine instead of its label
+  4: [
+    [1.0, { Id: 4, Display: 'Set-up', Category: 2, BgColor: '#1565C0', FgColor: '#FFFFFF', PatternName: 'dots-3', PatternColor: '#ededed' }]
+  ],
+  // Machine 5 — uniform stop, to try lastmachinestatetemplate.stoppedIds: open
+  // the demo with ?stoppedIds=3 and the classification dialog opens on its own
+  5: [
+    [1.0, { Id: 3, Display: 'Off', Category: 1, BgColor: '#9E9E9E', FgColor: '#FFFFFF', PatternName: 'diagonal-stripe-1', PatternColor: '#ededed' }]
   ]
 };
 

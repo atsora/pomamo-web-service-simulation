@@ -24,6 +24,13 @@ MOCK.respond('CurrentMachineStateTemplateOperation', {
       MachineStateTemplate: { Id: 7 },
       Operation: { Display: 'OP-2200 Turning' },
       Since: '{{now-45m}}'
+    },
+    // Machine 4 is the one in set-up in MachineStateTemplateSlots: this is what
+    // the x-setupmachine mounted by x-lastmachinestatetemplate displays
+    4: {
+      MachineStateTemplate: { Id: 4 },
+      Operation: { Display: 'OP-1042 Roughing' },
+      Since: '{{now-8m}}'
     }
   },
   default: {
