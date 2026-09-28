@@ -13,6 +13,7 @@ require('./_helpers');
     if (!rev) return { __status: 400, body: MOCK.errorBody('Id required') };
     if (counters[rev] === undefined) counters[rev] = 3;
     if (counters[rev] > 0) counters[rev]--;
-    return counters[rev];
+    // Same shape as the web service (PendingModificationsResponseDTO)
+    return { Number: counters[rev] };
   }, { delay: 400 });
 })();
