@@ -294,10 +294,38 @@ var mockTaskInstances = [
 ];
 
 // GraphQL endpoint mock — matched by path suffix so the same regex catches
-// `http://localhost:8080/graphql`, `http://demo2.atsora.eu:5000/graphql`,
+// `http://localhost:8080/optasks`, `http://demo2.atsora.eu:5000/optasks`,
 // and any other host the configured `path` may point to. Mirrors the
-// convention used by MOCK.respond for the REST endpoints.
-var graphqlEndpoint = /\/graphql(\?.*)?$/i;
+// convention used by MOCK.respond for the REST endpoints. `optasks` is the
+// task schema of the web service (x-task, x-taskslist); `graphql` is kept
+// for the older callers.
+var graphqlEndpoint = /\/(optasks|graphql)(\?.*)?$/i;
+
+// Machines of a machineGroup, resolved like the web service (see
+// taskInstancesNext in opTasks.graphql): a group id, a machine id, machine ids
+// separated by ',' (no group in the list), or group ids separated by '_' (the
+// intersection). An unknown group or machine is an error
+var mockGroups = {
+  [String(SCENARIO.MAIN_GROUP)]: SCENARIO.MACHINES.filter(m => m.monitored).map(m => String(m.id)),
+  [String(SCENARIO.MILL_GROUP)]: ['1', '2'],
+  [String(SCENARIO.LATHE_GROUP)]: ['3']
+};
+function machinesOfGroup(machineGroup) {
+  var id = machineGroup.trim();
+  var machineIds = SCENARIO.MACHINES.map(m => String(m.id));
+  var unknown = new Error('Machine group ' + machineGroup + ' does not exist');
+  if (id.includes(',')) {
+    var items = id.split(',').map(item => item.trim());
+    if (items.some(item => !/^\d+$/.test(item) || !machineIds.includes(item))) throw unknown;
+    return items;
+  }
+  if (id.includes('_')) {
+    return id.split('_').map(machinesOfGroup).reduce((a, b) => a.filter(m => b.includes(m)));
+  }
+  if (mockGroups[id]) return mockGroups[id];
+  if (machineIds.includes(id)) return [id];
+  throw unknown;
+}
 
 // Helper function to parse GraphQL query
 function parseGraphQLRequest(data) {
@@ -485,16 +513,32 @@ MOCK.respondRaw(graphqlEndpoint, function (settings) {
       };
     }
     else if (query.includes('taskInstancesNext')) {
-      var role = variables.role || 'Operator';
-      var machineGroup = variables.machineGroup || 'prod-line-1';
-      var filtered = mockTaskInstances.filter(inst =>
-        inst.result === null &&
-        inst.taskTemplate.role === role &&
-        inst.taskTemplate.machineGroup === machineGroup
-      );
+      // As defined in atracking-graphql/opTasks.graphql: the TaskDue (no id, no
+      // result) of a role on the machines of machineGroup. The role matches
+      // case-insensitively; an empty role (no login in a demo) matches any role
+      var role = String(variables.role || '').toLowerCase();
+      var machines;
+      try {
+        machines = machinesOfGroup(String(variables.machineGroup || ''));
+      }
+      catch (e) {
+        this.responseText = { 'data': null, 'errors': [{ 'message': e.message, 'extensions': { 'code': 'Pomamo.WrongRequestParameter' } }] };
+        return;
+      }
+      var tasksDue = mockTaskInstances
+        .filter(inst => inst.result === null
+          && machines.includes(inst.machineId)
+          && (role === '' || inst.taskTemplate.role.toLowerCase() === role))
+        .map(inst => ({
+          'machineId': inst.machineId,
+          'start': inst.start,
+          'end': inst.end,
+          'taskTemplate': inst.taskTemplate,
+          'shiftHandover': null
+        }));
       this.responseText = {
         'data': {
-          'taskInstancesNext': filtered
+          'taskInstancesNext': tasksDue
         }
       };
     }
@@ -518,28 +562,6 @@ MOCK.respondRaw(graphqlEndpoint, function (settings) {
       this.responseText = {
         'data': {
           'taskInstanceResultsInRange': filtered
-        }
-      };
-    }
-    // Return all task instances (including those with null result)
-    else if (query.includes('allTaskInstances')) {
-      // Optional filtering by machineId (keeps backward compatibility)
-      var machineId = variables.machineId;
-      if (!machineId) {
-        var matchMachine = query.match(/allTaskInstances\s*\(\s*machineId\s*:\s*"([^"]+)"\s*\)/);
-        machineId = matchMachine ? matchMachine[1] : null;
-      }
-
-      var result = mockTaskInstances;
-      if (machineId) {
-        result = mockTaskInstances.filter(function (inst) {
-          return inst.machineId === String(machineId);
-        });
-      }
-
-      this.responseText = {
-        'data': {
-          'allTaskInstances': result
         }
       };
     }
