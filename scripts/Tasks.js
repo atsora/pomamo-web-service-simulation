@@ -348,53 +348,6 @@ function getOperationName(query) {
   return match ? match[1] : null;
 }
 
-function getTaskInstanceForMachine(machineId) {
-  var candidates = mockTaskInstances.filter(function (inst) {
-    // Only return instances that are not yet validated
-    return inst.machineId === String(machineId) && inst.result === null;
-  });
-
-  if (!candidates.length) {
-    return null;
-  }
-
-  var now = new Date();
-
-  // 1) Prefer an in-progress task
-  for (var i = 0; i < candidates.length; i++) {
-    var s = new Date(candidates[i].start);
-    var e = new Date(candidates[i].end);
-    if (!isNaN(s.getTime()) && !isNaN(e.getTime()) && s.getTime() <= now.getTime() && now.getTime() <= e.getTime()) {
-      return candidates[i];
-    }
-  }
-
-  // 2) Otherwise, pick the next upcoming task
-  var next = null;
-  for (var j = 0; j < candidates.length; j++) {
-    var ss = new Date(candidates[j].start);
-    if (!isNaN(ss.getTime()) && ss.getTime() > now.getTime()) {
-      if (next === null || ss.getTime() < new Date(next.start).getTime()) {
-        next = candidates[j];
-      }
-    }
-  }
-  if (next) {
-    return next;
-  }
-
-  // 3) Fallback: latest past task
-  var last = candidates[0];
-  for (var k = 1; k < candidates.length; k++) {
-    var le = new Date(last.end);
-    var ke = new Date(candidates[k].end);
-    if (!isNaN(ke.getTime()) && (isNaN(le.getTime()) || ke.getTime() > le.getTime())) {
-      last = candidates[k];
-    }
-  }
-  return last;
-}
-
 // Mock GraphQL responses — registered via MOCK.respondRaw so the same
 // `this.responseText` / `this.status` API used below works through the
 // new fetch interceptor (mockjax patched $.ajax which no longer exists
@@ -461,20 +414,6 @@ MOCK.respondRaw(graphqlEndpoint, function (settings) {
       this.responseText = {
         'data': {
           'taskTemplate': template || null
-        }
-      };
-    }
-    else if (query.includes('taskInstanceByMachineId')) {
-      var machineId = variables.machineId;
-      if (!machineId) {
-        var matchMachine = query.match(/machineId\s*:\s*"([^"]+)"/);
-        machineId = matchMachine ? matchMachine[1] : null;
-      }
-
-      var instance = machineId ? getTaskInstanceForMachine(machineId) : null;
-      this.responseText = {
-        'data': {
-          'taskInstanceByMachineId': instance || null
         }
       };
     }
