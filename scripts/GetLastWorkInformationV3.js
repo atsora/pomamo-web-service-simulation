@@ -5,6 +5,8 @@
 
 // Mock for `GetLastWorkInformationV3/<machineId>` — work info of the last
 // operation slot. The path id is parsed by MOCK.respond as a MachineId.
+// Id of the part and of the operation: the book button of the documents (ids of
+// atsora-mocks, GraphQL /g)
 
 require('./_helpers');
 
@@ -14,8 +16,8 @@ var GetLastWorkInformationV3JSON1 = {
   End: '{{now-3m}}',
   WorkInformations: [
     { Kind: 'WorkOrder',  Value: 'WO-1001'   },
-    { Kind: 'Part',       Value: 'PART-A1'   },
-    { Kind: 'Operation',  Value: 'OP-1001-A' }
+    { Kind: 'Part',       Value: 'PART-A1',   Id: 1 },
+    { Kind: 'Operation',  Value: 'OP-1001-A', Id: 1 }
   ],
   Config: { IsEditable: false, OperationFromCnc: false, OnePartPerWorkOrder: false }
 };
@@ -26,8 +28,8 @@ var GetLastWorkInformationV3JSON2 = {
   End: '{{now-5m}}',
   WorkInformations: [
     { Kind: 'WorkOrder',  Value: 'WO-1002'   },
-    { Kind: 'Part',       Value: 'PART-B2'   },
-    { Kind: 'Operation',  Value: 'OP-1002-B' }
+    { Kind: 'Part',       Value: 'PART-B2',   Id: 2 },
+    { Kind: 'Operation',  Value: 'OP-1002-B', Id: 2 }
   ],
   Config: { IsEditable: false, OperationFromCnc: false, OnePartPerWorkOrder: false }
 };
