@@ -4,7 +4,8 @@
 // SPDX-License-Identifier: Apache-2.0
 
 // Mock for `Operation/ProductionMachiningStatus?MachineId=<id>` — current
-// shift counters + work info + events.
+// shift counters + work info + events. Ids of the work informations of machines 1
+// and 2: the book button of the documents (see WorkInfoDocCount.js).
 
 require('./_helpers');
 
@@ -17,9 +18,9 @@ MOCK.respond('Operation/ProductionMachiningStatus', {
       Day: '2026-05-21',
       Shift: { Id: 2, Display: 'Day shift', Color: '#0080C0' },
       WorkInformations: [
-        { Kind: 'WorkOrder', Value: 'WO-1001' },
-        { Kind: 'Part',      Value: 'PART-1' },
-        { Kind: 'Operation', Value: 'OP-1-A' }
+        { Kind: 'WorkOrder', Value: 'WO-1001', Id: 1001 },
+        { Kind: 'Part',      Value: 'PART-1', Id: 1 },
+        { Kind: 'Operation', Value: 'OP-1-A', Id: 1 }
       ],
       ComingEvents: [], ActiveEvents: []
     },
@@ -30,9 +31,9 @@ MOCK.respond('Operation/ProductionMachiningStatus', {
       Day: '2026-05-21',
       Shift: { Id: 2, Display: 'Day shift', Color: '#0080C0' },
       WorkInformations: [
-        { Kind: 'WorkOrder', Value: 'WO-1002' },
-        { Kind: 'Part',      Value: 'PART-2' },
-        { Kind: 'Operation', Value: 'OP-2-A' }
+        { Kind: 'WorkOrder', Value: 'WO-1002', Id: 1002 },
+        { Kind: 'Part',      Value: 'PART-2', Id: 2 },
+        { Kind: 'Operation', Value: 'OP-2-A', Id: 2 }
       ],
       ComingEvents: [], ActiveEvents: []
     },

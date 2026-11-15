@@ -4,7 +4,8 @@
 // SPDX-License-Identifier: Apache-2.0
 
 // Mock for `GetListOfOperationSlotV2?Id|MachineId=<id>&Range=<range>` —
-// 3 operation slots over the last 4 hours.
+// 3 operation slots over the last 4 hours. Ids of the part and of the operation of
+// machines 1 and 2: the book button of the documents (see WorkInfoDocCount.js).
 
 require('./_helpers');
 
@@ -12,8 +13,8 @@ var GetListOfOperationSlotV2JSON1 = {
   Begin: '{{now-4h}}',
   End:   '{{now}}',
   List: [
-    { OperationSlotId: 4010, Begin: '{{now-4h}}', End: '{{now-3h}}', WorkInformations: [{ Kind: 'WorkOrder', Value: 'WO-1001-1' }, { Kind: 'Part', Value: 'PART-1' }, { Kind: 'Operation', Value: 'OP-1-1' }] },
-    { OperationSlotId: 4011, Begin: '{{now-3h}}', End: '{{now-2h}}', WorkInformations: [{ Kind: 'WorkOrder', Value: 'WO-1001-2' }, { Kind: 'Part', Value: 'PART-1' }, { Kind: 'Operation', Value: 'OP-1-2' }] },
+    { OperationSlotId: 4010, Begin: '{{now-4h}}', End: '{{now-3h}}', WorkInformations: [{ Kind: 'WorkOrder', Value: 'WO-1001-1' }, { Kind: 'Part', Value: 'PART-1', Id: 1 }, { Kind: 'Operation', Value: 'OP-1-1', Id: 1 }] },
+    { OperationSlotId: 4011, Begin: '{{now-3h}}', End: '{{now-2h}}', WorkInformations: [{ Kind: 'WorkOrder', Value: 'WO-1001-2' }, { Kind: 'Part', Value: 'PART-1', Id: 1 }, { Kind: 'Operation', Value: 'OP-1-2', Id: 3 }] },
     { OperationSlotId: 4012, Begin: '{{now-2h}}', End: '{{now-1h}}', WorkInformations: [{ Kind: 'WorkOrder', Value: 'WO-1001-3' }, { Kind: 'Part', Value: 'PART-1' }, { Kind: 'Operation', Value: 'OP-1-3' }] }
   ]
 };
@@ -22,7 +23,7 @@ var GetListOfOperationSlotV2JSON2 = {
   Begin: '{{now-4h}}',
   End:   '{{now}}',
   List: [
-    { OperationSlotId: 4020, Begin: '{{now-4h}}',  End: '{{now-2h}}', WorkInformations: [{ Kind: 'WorkOrder', Value: 'WO-1002-1' }, { Kind: 'Part', Value: 'PART-2' }, { Kind: 'Operation', Value: 'OP-2-1' }] },
+    { OperationSlotId: 4020, Begin: '{{now-4h}}',  End: '{{now-2h}}', WorkInformations: [{ Kind: 'WorkOrder', Value: 'WO-1002-1' }, { Kind: 'Part', Value: 'PART-2', Id: 2 }, { Kind: 'Operation', Value: 'OP-2-1', Id: 2 }] },
     { OperationSlotId: 4021, Begin: '{{now-2h}}',  End: '{{now}}',    WorkInformations: [{ Kind: 'WorkOrder', Value: 'WO-1002-2' }, { Kind: 'Part', Value: 'PART-2' }, { Kind: 'Operation', Value: 'OP-2-2' }] }
   ]
 };
